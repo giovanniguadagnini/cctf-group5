@@ -50,7 +50,7 @@ sudo iptables -A INPUT -i lo -j ACCEPT
 sudo iptables -A OUTPUT -o lo -j ACCEPT
 sudo iptables -A INPUT -p tcp --dport 22 -m state --state NEW,ESTABLISHED -j ACCEPT
 sudo iptables -A OUTPUT -p tcp --sport 22 -m state --state ESTABLISHED -j ACCEPT
-sudo iptables -A PREROUTING -t nat -i \$(ip a | grep 10.1.1.3 | tail -c 5) -p tcp --dport 80 -j DNAT --to 10.1.5.2:8080
+sudo iptables -A PREROUTING -t nat -i \$(ip a | grep 10.1.1.3 | tail -c 5) -p tcp -s 10.1.3.2,10.1.4.2,10.1.2.2 --dport 80 -j DNAT --to 10.1.5.2:8080 
 sudo iptables -A FORWARD -p tcp -d 10.1.5.2 --dports 8080 -m state --state NEW,ESTABLISHED -j ACCEPT
 sudo iptables -A POSTROUTING -t nat -o \$(ip a | grep 10.1.1.3 | tail -c 5) -p tcp -s 10.1.5.2 --sport 8080 -j SNAT --to-source 10.1.1.3:80
 sudo iptables -P INPUT DROP
