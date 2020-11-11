@@ -1,0 +1,14 @@
+ATTACK PHASE:
+    1)Intesify the genuine requests when the attack is running, to get more points. 
+    (see if it's possible to notify the genuine script changing a value in a shared file, to intensificate the requests when the attack is running)
+    2) Try Slow-norris attack (DOS)
+    3) Try brute force username,password.
+
+DEFENSE PHASE:
+    1) Enable FW in gateway and server 
+        allow http[80] from clients network 
+        and ssh[22] only from deterlab and from network shared between server and gateway (also from deterlab network)
+    2) Enable syncookies to avoid syn flood attacks
+    3) Enable defense modules for apache2 (libapache2-mod-evasive).
+    4) Install snort in inline mode in gateway machine.
+        Anomaly detection, track by_scr and see if client is sending more than 1 request per second (block).

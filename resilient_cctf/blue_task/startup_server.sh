@@ -14,10 +14,6 @@ then
    sudo apt-get install apache2
 fi
 
-sed -i.old "s/Listen 80$/Listen 8080/" /etc/apache2/ports.conf
-sed -i.old "s/<VirtualHost *:80>$/<VirtualHost *:8080>/" /etc/apache2/sites-enabled/000-default.conf
-sudo systemctl restart apache2
-
 sudo sysctl -w net.ipv4.tcp_syncookies=1
 sudo sysctl -w net.ipv4.tcp_max_syn_backlog=10000
 
@@ -54,6 +50,7 @@ sudo iptables -A OUTPUT -o lo -j ACCEPT
 sudo iptables -A INPUT -p tcp --dport 22 -m state --state NEW,ESTABLISHED -j ACCEPT
 sudo iptables -A OUTPUT -p tcp --sport 22 -m state --state ESTABLISHED -j ACCEPT
 sudo iptables -A FORWARD -p tcp -d 10.1.5.2 --dport 80 -m state --state NEW,ESTABLISHED -j ACCEPT
+sudo iptables -A FORWARD -p tcp -s 10.1.5.2 --sport 80 -m state --state ESTABLISHED -j ACCEPT
 sudo iptables -P INPUT DROP
 sudo iptables -P OUTPUT DROP
 sudo iptables -P FORWARD DROP
