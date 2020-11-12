@@ -8,6 +8,7 @@ ATTACK PHASE:
     6) Flooding using crafted IP packets with spoofed IP (src IP = server IP) with TTL=2. When it reaches the gateway, it will send ICMP packet to the server.
         This should elude an eventual rate_filter rule because is the gateway to DoS the server.
     7) Run a nmap scan to detect any service left open (sudo nmap -a 10.1.5.2/10.1.5.1/10.1.1.3).
+    8) Block with iptables evenutal RST from the defenders.
 
 DEFENSE PHASE:
     1) Enable FW in gateway and server 
