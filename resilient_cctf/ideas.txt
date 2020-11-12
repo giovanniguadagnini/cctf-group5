@@ -3,11 +3,11 @@ ATTACK PHASE:
     (see if it's possible to notify the genuine script changing a value in a shared file, to intensificate the requests when the attack is running)
     2) Try Slow-norris attack (DOS)
     3) Try brute force username,password.
-    4) SYN flooding to the legitimate client using spoofed IP (src IP = server IP) -> SYN-ACK flooding done by the legitimate client
-    5) In the initial stage of the attack, flooding the server with ACK packets until they apply iptables rules to reject unrelated packets
+    4) SYN flooding to the legitimate client using spoofed IP (src IP = server IP) -> SYN-ACK flooding done by the legitimate client.
+    5) In the initial stage of the attack, flooding the server with ACK packets until they apply iptables rules to reject unrelated packets.
     6) Flooding using crafted IP packets with spoofed IP (src IP = server IP) with TTL=2. When it reaches the gateway, it will send ICMP packet to the server.
         This should elude an eventual rate_filter rule because is the gateway to DoS the server.
-    7) Run a nmap scan (sudo nmap -a 10.1.5.2)
+    7) Run a nmap scan to detect any service left open (sudo nmap -a 10.1.5.2/10.1.5.1/10.1.1.3).
 
 DEFENSE PHASE:
     1) Enable FW in gateway and server 
@@ -17,5 +17,5 @@ DEFENSE PHASE:
     3) Enable defense modules for apache2 (libapache2-mod-evasive). (https://phoenixnap.com/kb/apache-mod-evasive)
     4) Install snort in inline mode in gateway machine.
         Anomaly detection, track by_scr and see if client is sending more than 1 request per second (block).
-    5) Drop all ingoing ICMP packets on the server
-    6) Check all the open ports (what service is running on each open port)
+    5) Drop all ingoing ICMP packets on the server.
+    6) Check all the open ports (what service is running on each open port).

@@ -14,14 +14,16 @@ for (( c=1; c<4; c++ ))
 do  
 echo "[client$c] setting up home folder and uploading scripts"
 
-ssh -o StrictHostKeyChecking=no $CLIENT$c$PROJECT 1> /dev/null 2>errors/startup_client.txt <<EOF
+ssh $CLIENT$c$PROJECT 1> /dev/null 2>errors/startup_client.txt <<EOF
 sudo bash
 mkdir /home/cctf
 chmod +x 777 /home/cctf
-cp -r resilient-cctf/red_task/scripts /home/cctf
+cp -r resilient_cctf/red_task/scripts /home/cctf
 exit
-/share/education/TCPSYNFlood_USC_ISI/install-flooder
-cp -r resilient-cctf/red_task/scripts /home/cctf
+if ! which flooder &> /dev/null
+then
+   /share/education/TCPSYNFlood_USC_ISI/install-flooder
+fi
 EOF
 
 echo "[client$c] /home/cctf folder, flooder installed, script uploaded"

@@ -17,7 +17,7 @@ ssh $SERVER 1> /dev/null 2>errors/startup_server.txt <<EOF
 if ! which apache2 &> /dev/null
 then
    sudo apt-get update 
-   sudo apt-get install apache2
+   sudo apt-get install apache2 -y
 fi
 sudo sysctl -w net.ipv4.tcp_syncookies=1
 sudo sysctl -w net.ipv4.tcp_max_syn_backlog=10000
@@ -42,7 +42,7 @@ echo "[server] Web server apache2 installed and basic iptables rules enabled"
 
 ### Page creation in /var/www/html
 echo "[server] creation of webpages and upload of all scripts"
-ssh -o StrictHostKeyChecking=no $SERVER 1> /dev/null 2>>errors/startup_server.txt <<EOF
+ssh $SERVER 1> /dev/null 2>>errors/startup_server.txt <<EOF
 sudo bash
 for (( c=1; c<11; c++ ))
 do  
@@ -56,10 +56,9 @@ exit
 EOF
 echo "[server] Html pages created in /var/www/html, created folder /home/cctf and uploaded scripts"
 
-
 ### Iptables rules
 echo "[gateway] Setting up iptables rules and upload of scripts"
-ssh -o StrictHostKeyChecking=no $GATEWAY 1> /dev/null 2>>errors/startup_server.txt <<EOF
+ssh $GATEWAY 1> /dev/null 2>>errors/startup_server.txt <<EOF
 sudo iptables -F
 sudo iptables -A INPUT -i lo -j ACCEPT
 sudo iptables -A OUTPUT -o lo -j ACCEPT
