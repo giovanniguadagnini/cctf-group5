@@ -30,8 +30,10 @@ sudo iptables -A INPUT -p tcp --dport 22 -s 10.1.5.0/24 -m state --state NEW,EST
 sudo iptables -A OUTPUT -p tcp --sport 22 -d 10.1.5.0/24 -m state --state ESTABLISHED -j ACCEPT
 sudo iptables -A OUTPUT -p tcp --dport 22 -s 10.1.5.0/24 -m state --state NEW,ESTABLISHED -j ACCEPT
 sudo iptables -A INPUT -p tcp --sport 22 -d 10.1.5.0/24 -m state --state ESTABLISHED -j ACCEPT
-sudo iptables -A INPUT -p icmp --icmp-type echo-request -s 10.1.5.0/24 -j ACCEPT
-sudo iptables -A OUTPUT -p icmp --icmp-type echo-request -j ACCEPT
+sudo iptables -A INPUT -p icmp --icmp-type echo-request -s 10.1.5.0/24 -i \$(ip a | grep 10.1.5.2 | tail -c 5) -j ACCEPT
+sudo iptables -A OUTPUT -p icmp --icmp-type echo-reply -o \$(ip a | grep 10.1.5.2 | tail -c 5) -j ACCEPT
+sudo iptables -A OUTPUT -p icmp --icmp-type echo-request -o \$(ip a | grep 10.1.5.2 | tail -c 5) -j ACCEPT
+sudo iptables -A INPUT -p icmp --icmp-type echo-reply -i \$(ip a | grep 10.1.5.2 | tail -c 5) -j ACCEPT
 sudo iptables -A INPUT -i \$(ip a | grep 10.1.5.2 | tail -c 5) -p tcp --dport 80 -j ACCEPT
 sudo iptables -A OUTPUT -o \$(ip a | grep 10.1.5.2 | tail -c 5) -p tcp --sport 80 -j ACCEPT
 sudo iptables -P INPUT DROP
@@ -57,7 +59,7 @@ EOF
 echo "[server] Html pages created in /var/www/html, created folder /home/cctf and uploaded scripts"
 
 #Snort installation copied from /share/education/SecuringLegacySystems_JHU/Snort/SnortInstall.sh
-echo "[gateway] Snort installation please help."
+echo "[gateway] Snort installation please wait."
 ssh $GATEWAY 1> /dev/null 2>>errors/startup_server.txt <<EOF
 sudo cp /share/education/SecuringLegacySystems_JHU/Snort/iptablesload /etc/network/if-pre-up.d/
 sudo chmod +x /etc/network/if-pre-up.d/iptablesload
@@ -101,8 +103,10 @@ sudo iptables -A OUTPUT -p tcp --dport 22 -s 10.1.5.0/24 -m state --state NEW,ES
 sudo iptables -A INPUT -p tcp --sport 22 -d 10.1.5.0/24 -m state --state ESTABLISHED -j ACCEPT
 sudo iptables -A FORWARD -p tcp -d 10.1.5.2 --dport 80 -m state --state NEW,ESTABLISHED -j NFQUEUE
 sudo iptables -A FORWARD -p tcp -s 10.1.5.2 --sport 80 -m state --state ESTABLISHED -j NFQUEUE
-sudo iptables -A INPUT -p icmp --icmp-type echo-request -s 10.1.5.0/24 -j ACCEPT
-sudo iptables -A OUTPUT -p icmp --icmp-type echo-request -j ACCEPT
+sudo iptables -A INPUT -p icmp --icmp-type echo-request -s 10.1.5.0/24 -i \$(ip a | grep 10.1.5.3 | tail -c 5) -j ACCEPT
+sudo iptables -A OUTPUT -p icmp --icmp-type echo-reply -o \$(ip a | grep 10.1.5.3 | tail -c 5) -j ACCEPT
+sudo iptables -A OUTPUT -p icmp --icmp-type echo-request -o \$(ip a | grep 10.1.5.3 | tail -c 5) -j ACCEPT
+sudo iptables -A INPUT -p icmp --icmp-type echo-reply -i \$(ip a | grep 10.1.5.3 | tail -c 5) -j ACCEPT
 sudo iptables -P INPUT DROP
 sudo iptables -P OUTPUT DROP
 sudo iptables -P FORWARD DROP
@@ -114,11 +118,9 @@ mkdir /home/cctf/snort
 chmod 777 /home/cctf/snort
 mkdir /home/cctf/snort/alerts
 chmod 777 /home/cctf/snort/alerts
-echo 'alert any any -> 10.1.5.2 80 (sid:1000001; msg:"test");' > /home/cctf/snort/snort.conf
+echo 'alert tcp any any -> 10.1.5.2 80 (sid:1000001; msg:"test";)' > /home/cctf/snort/snort.conf
 echo 'config policy_mode:inline' >> /home/cctf/snort/snort.conf
 sudo snort --daq nfq -Q -c /home/cctf/snort/snort.conf -l /home/cctf/snort/alerts -D 
 exit
 EOF
 echo "[gateway] Enabled iptables rules in gateway machine, created folder /home/cctf and uploaded scripts"
-
-#Upload scripts to perform analysis
