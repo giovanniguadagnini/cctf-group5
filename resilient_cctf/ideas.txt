@@ -8,6 +8,8 @@ ATTACK PHASE:
     6) Flooding using crafted IP packets with spoofed IP (src IP = server IP) with TTL=2. When it reaches the gateway, it will send ICMP packet to the server.
         This should elude an eventual rate_filter rule because is the gateway to DoS the server.
     7) Run a nmap scan to detect any service left open (sudo nmap -a 10.1.5.2/10.1.5.1/10.1.1.3).
+    8) Block with iptables evenutal RST from the defenders.
+    9) Do the best to make the request look like legit requests (Maybe answer also to syn-ack to trick the server). 
 
 DEFENSE PHASE:
     1) Enable FW in gateway and server 
@@ -19,3 +21,6 @@ DEFENSE PHASE:
         Anomaly detection, track by_scr and see if client is sending more than 1 request per second (block).
     5) Drop all ingoing ICMP packets on the server.
     6) Check all the open ports (what service is running on each open port).
+    7) Optimize apache threads for the available memory ((tot_memory*1024)/average_weight_apache2_process)-memory_other_programs
+        ps -ylC apache2 --sort:rss
+   
