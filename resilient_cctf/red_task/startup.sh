@@ -17,7 +17,7 @@ echo "[client$c] setting up home folder and uploading scripts"
 ssh $CLIENT$c$PROJECT 1> /dev/null 2>errors/startup_client.txt <<EOF
 sudo bash
 mkdir /home/cctf
-chmod +x 777 /home/cctf
+chmod 777 /home/cctf
 cp -r resilient_cctf/red_task/scripts /home/cctf
 exit
 if ! which flooder &> /dev/null
