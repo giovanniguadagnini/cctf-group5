@@ -17,14 +17,23 @@ ssh $SERVER 1> /dev/null 2>errors/startup_server.txt <<EOF
 if ! which apache2 &> /dev/null
 then
    sudo apt-get update 
-   sudo apt-get install apache2 -y
+   sudo apt-get install apache2 apache2-utils libapache2-mod-qos -y
 fi
 sudo sysctl -w net.ipv4.tcp_syncookies=1
-sudo sysctl -w net.ipv4.tcp_max_syn_backlog=10000
+sudo sysctl -w net.ipv4.tcp_max_syn_backlog=100000
 if ! which tcpflow &> /dev/null
 then
    sudo apt install tcpflow -y
 fi
+sudo cp /etc/apache2/mods-available/qos.conf /etc/apache2/mods-available/qos.conf.old
+sudo echo '<IfModule qos_module>' > /etc/apache2/mods-available/qos.conf
+sudo echo '    QS_SrvRequestRate   120 # minimum request rate (bytes/sec at request reading):' >> /etc/apache2/mods-available/qos.conf
+sudo echo '    QS_SrvMaxConn       100 # limits the connections for this virtual host:' >> /etc/apache2/mods-available/qos.conf
+sudo echo '    QS_SrvMaxConnClose  200 # allows keep-alive support till the server reaches 200 connections:' >> /etc/apache2/mods-available/qos.conf
+sudo echo '    QS_SrvMaxConnPerIP  10 # allows max 50 connections from a single ip address:' >> /etc/apache2/mods-available/qos.conf
+sudo echo '</IfModule>' >> /etc/apache2/mods-available/qos.conf
+sed -i .old "s/Timeout 300$/Timeout 10/" /etc/apache2/apache2.conf
+sudo service apache2 restart
 sudo iptables -F
 sudo iptables -A INPUT -i lo -j ACCEPT
 sudo iptables -A OUTPUT -o lo -j ACCEPT
