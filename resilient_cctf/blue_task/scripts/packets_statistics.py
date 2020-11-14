@@ -1,6 +1,8 @@
+# Extend your monitoring software so you can automatically get statistics on 
+# number of packets and bytes sent to the server in TCP data, TCP SYN, UDP 
+# and ICMP and Total categories so you can diagnose various DDoS attacks. 
+# Make sure the software monitors the correct interface.
 
-# Extend your monitoring software so you can automatically get statistics on number of packets and bytes sent to the server in TCP data, 
-# TCP SYN, UDP and ICMP and Total categories so you can diagnose various DDoS attacks. Make sure the software monitors the correct interface.
 import os
 import sys 
 import time
@@ -12,13 +14,13 @@ if len(sys.argv) < 2:
 #Generate the filename
 hour=time.time()
 hour=str(hour)[0:str(hour).find(".")]
-filename = "data_"+hour+".pcap"
+filename = "data_server_" + hour + ".txt"
 
 #Start the data measuremetns 
-os.system("sudo timeout " + sys.argv[1] +" tcpdump -i $(ip a | grep 10.1.5.2 | tail -c 5) -nn > " + filename + ".txt" )
+os.system("sudo timeout " + sys.argv[1] + " tcpdump -i $(ip a | grep 10.1.5.2 | tail -c 5) -nn > " + filename)
 
 #Open the source file
-sourceFile = open(filename+".txt", "r")
+sourceFile = open(filename, "r")
 
 #Get lines from source file
 lines = sourceFile.readlines() 
