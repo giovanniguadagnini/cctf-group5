@@ -10,6 +10,7 @@ ATTACK PHASE:
     7) Run a nmap scan to detect any service left open (sudo nmap -a 10.1.5.2/10.1.5.1/10.1.1.3).
     8) Block with iptables evenutal RST from the defenders.
     9) Do the best to make the request look like legit requests (Maybe answer also to syn-ack to trick the server). 
+    10) Flood with HTTP requests with src_addr=10.1.5.0/24 to generate ARP requests in their network.
 
 DEFENSE PHASE:
     1) Enable FW in gateway and server 
@@ -23,4 +24,6 @@ DEFENSE PHASE:
     6) Check all the open ports (what service is running on each open port).
     7) Optimize apache threads for the available memory ((tot_memory*1024)/average_weight_apache2_process)-memory_other_programs
         ps -ylC apache2 --sort:rss
-   
+    8) Drop all traffic on gateway interface 10.1.1.3 where source address = server address -> prevent spoofing
+    9) On the gateway, drop all traffic with sourceIP=10.1.5.0/24 on the gateway interface 10.1.1.3 -> prevent ARP flooding internally
+    10) On the gateway, drop ssh traffic on interface 10.1.1.3
