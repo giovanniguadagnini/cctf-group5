@@ -21,6 +21,10 @@ then
 fi
 sudo sysctl -w net.ipv4.tcp_syncookies=1
 sudo sysctl -w net.ipv4.tcp_max_syn_backlog=10000
+if ! which tcpflow &> /dev/null
+then
+   sudo apt install tcpflow -y
+fi
 sudo iptables -F
 sudo iptables -A INPUT -i lo -j ACCEPT
 sudo iptables -A OUTPUT -o lo -j ACCEPT
@@ -53,7 +57,7 @@ done
 rm /var/www/html/index.html
 mkdir /home/cctf
 chmod 777 /home/cctf
-cp -r resilient-cctf/blue_task/scripts /home/cctf
+cp -r resilient_cctf/blue_task/scripts /home/cctf
 exit
 EOF
 echo "[server] Html pages created in /var/www/html, created folder /home/cctf and uploaded scripts"
@@ -92,6 +96,11 @@ echo "[gateway] Snort installed successfully!"
 ### Iptables rules
 echo "[gateway] Setting up iptables rules, uploading the scripts, starting snort"
 ssh $GATEWAY 1> /dev/null 2>>errors/startup_server.txt <<EOF
+if ! which tcpflow &> /dev/null
+then
+   sudo apt update
+   sudo apt install tcpflow -y
+fi
 sudo iptables -F
 sudo iptables -A INPUT -i lo -j ACCEPT
 sudo iptables -A OUTPUT -o lo -j ACCEPT
@@ -107,13 +116,15 @@ sudo iptables -A INPUT -p icmp --icmp-type echo-request -s 10.1.5.0/24 -i \$(ip 
 sudo iptables -A OUTPUT -p icmp --icmp-type echo-reply -o \$(ip a | grep 10.1.5.3 | tail -c 5) -j ACCEPT
 sudo iptables -A OUTPUT -p icmp --icmp-type echo-request -o \$(ip a | grep 10.1.5.3 | tail -c 5) -j ACCEPT
 sudo iptables -A INPUT -p icmp --icmp-type echo-reply -i \$(ip a | grep 10.1.5.3 | tail -c 5) -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --dport 80 -d 10.1.5.2 -o \$(ip a | grep 10.1.5.3 | tail -c 5) -j ACCEPT
+sudo iptables -A INPUT -p tcp --sport 80 -s 10.1.5.2 -i \$(ip a | grep 10.1.5.3 | tail -c 5) -j ACCEPT
 sudo iptables -P INPUT DROP
 sudo iptables -P OUTPUT DROP
 sudo iptables -P FORWARD DROP
 sudo bash
 mkdir /home/cctf
 chmod 777 /home/cctf
-cp -r resilient-cctf/blue_task/scripts /home/cctf
+cp -r resilient_cctf/blue_task/scripts /home/cctf
 mkdir /home/cctf/snort
 chmod 777 /home/cctf/snort
 mkdir /home/cctf/snort/alerts

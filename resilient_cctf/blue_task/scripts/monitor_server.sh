@@ -1,8 +1,10 @@
 #!/bin/bash
-#Develop monitoring software on the gateway machine that will let you automatically check if server is getting slow.
+
+# Develop monitoring software on the gateway machine that will 
+# let you automatically check if server is getting slow.
 
 #Variables
-REQUESTS=10
+REQUESTS=5
 SERVER=10.1.5.2
 
 if [ $# -eq 0 ] || [ $# -gt 2 ];
@@ -23,7 +25,7 @@ fi
 if [ "$1" == "1" ] || [ "$1" == "3" ];
 then
 echo "Start ping test (press ^C to interrupt)"
-ping $SERVER -c $REQUESTS
+sudo ping -i 0.1  $SERVER -c $REQUESTS
 fi
 
 if [ "$1" == "2" ] || [ "$1" == "3" ];
