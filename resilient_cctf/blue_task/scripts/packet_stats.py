@@ -8,7 +8,7 @@ import sys
 import time
 
 if len(sys.argv) < 2:
-    print("Usage python3 packets_statistics.py <time_amount> ")
+    print("Usage python3 packets_stats.py <time_amount> ")
     exit(1)
 
 print("Don't use time_amount value too big or you could waste a lot of time in analyzing a big amount of data!")
@@ -41,7 +41,7 @@ for line in lines:
     #print("DST: " + dst)
     if(dst.find("10.1.5.2") != -1):
         packets_number = packets_number + 1
-    if(line.find("[.]") != -1):
+    if(line.find("[S]") != -1):
         tcp_syn_packets = tcp_syn_packets + 1
     if(line.find("length") != -1):
         size = line[line.find("length ") + 7 : ]
@@ -57,4 +57,4 @@ print("Packet sent to server: " + str(packets_number))
 print("Bytes sent to server: " + str(bytes_sent))
 print("TCP SYN packet received: " + str(tcp_syn_packets))
 
-os.system("rm -rf *.txt")
+os.system("mv " + filename + " " + filename + ".old")

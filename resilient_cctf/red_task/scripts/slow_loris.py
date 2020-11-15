@@ -48,7 +48,7 @@ def main():
     #bar.finish()
 
     while True:
-        print(("Sending Keep-Alive Headers to {}".format(len(socket_list))))
+        print("Sending Keep-Alive Headers ")
 
         for s in socket_list:
             try:

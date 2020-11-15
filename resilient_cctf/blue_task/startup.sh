@@ -130,7 +130,13 @@ mkdir /home/cctf/snort
 chmod 777 /home/cctf/snort
 mkdir /home/cctf/snort/alerts
 chmod 777 /home/cctf/snort/alerts
-echo 'alert tcp any any -> 10.1.5.2 80 (sid:1000001; msg:"test";)' > /home/cctf/snort/snort.conf
+echo '#alert tcp any any -> 10.1.5.2 80 (msg: "TPC SYN detected"; sid: 1000003; rev: 1; flags:S;)' > /home/cctf/snort/snort.conf
+echo '#rate_filter gen_id 1, sig_id 1000003, track by_src, count 100, seconds 1, new_action drop, timeout 10' >> /home/cctf/snort/snort.conf
+echo '#event_filter gen_id 1, sig_id 1000003, track by_src, count 1, seconds 10, type limit' >> /home/cctf/snort/snort.conf
+echo '#drop tcp any any -> 10.1.5.2 80 (msg: "Detected junk traffic"; sid: 1000005;  pcre:"/.-. /";)' >> /home/cctf/snort/snort.conf
+echo '#event_filter gen_id 1, sig_id 1000005, track by_src, count 5, seconds 10, type limit' >> /home/cctf/snort/snort.conf
+echo '#alert tcp any any -> 10.1.5.2 80 (msg: "TCP SYN flood attack detected"; sid: 1000004; rev: 1; flags:S; detection_filter: track by_src, count 100, seconds 1;)' >> /home/cctf/snort/snort.conf
+echo '#event_filter gen_id 1, sig_id 1000004, track by_src, count 1, seconds 10, type limit' >> /home/cctf/snort/snort.conf
 echo 'config policy_mode:inline' >> /home/cctf/snort/snort.conf
 sudo snort --daq nfq -Q -c /home/cctf/snort/snort.conf -l /home/cctf/snort/alerts -D 
 exit
