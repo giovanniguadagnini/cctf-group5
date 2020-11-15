@@ -33,6 +33,6 @@ sudo mv /home/cctf/lib/scapy-2.4.4/ /home/cctf/scripts/scapy
 sudo mv /home/cctf/scripts/junk_traffic.py /home/cctf/scripts/scapy/
 EOF
 
-echo "[client$c] /home/cctf folder, flooder installed, script uploaded"
+echo "[client$c] /home/cctf folder created, flooder installed, script uploaded"
 
 done

@@ -39,16 +39,12 @@ sudo iptables -A INPUT -i lo -j ACCEPT
 sudo iptables -A OUTPUT -o lo -j ACCEPT
 sudo iptables -A INPUT -s 192.168.0.0/16 -j ACCEPT
 sudo iptables -A OUTPUT -d 192.168.0.0/16 -j ACCEPT
-sudo iptables -A INPUT -p tcp --dport 22 -s 10.1.5.0/24 -m state --state NEW,ESTABLISHED -j ACCEPT
-sudo iptables -A OUTPUT -p tcp --sport 22 -d 10.1.5.0/24 -m state --state ESTABLISHED -j ACCEPT
-sudo iptables -A OUTPUT -p tcp --dport 22 -s 10.1.5.0/24 -m state --state NEW,ESTABLISHED -j ACCEPT
-sudo iptables -A INPUT -p tcp --sport 22 -d 10.1.5.0/24 -m state --state ESTABLISHED -j ACCEPT
-sudo iptables -A INPUT -p icmp --icmp-type echo-request -s 10.1.5.0/24 -i \$(ip a | grep 10.1.5.2 | tail -c 5) -j ACCEPT
-sudo iptables -A OUTPUT -p icmp --icmp-type echo-reply -o \$(ip a | grep 10.1.5.2 | tail -c 5) -j ACCEPT
-sudo iptables -A OUTPUT -p icmp --icmp-type echo-request -o \$(ip a | grep 10.1.5.2 | tail -c 5) -j ACCEPT
-sudo iptables -A INPUT -p icmp --icmp-type echo-reply -i \$(ip a | grep 10.1.5.2 | tail -c 5) -j ACCEPT
-sudo iptables -A INPUT -i \$(ip a | grep 10.1.5.2 | tail -c 5) -p tcp --dport 80 -j ACCEPT
-sudo iptables -A OUTPUT -o \$(ip a | grep 10.1.5.2 | tail -c 5) -p tcp --sport 80 -j ACCEPT
+sudo iptables -A INPUT -p icmp --icmp-type echo-request -s 10.1.5.3 -i \$(ip a | grep 10.1.5.2 | tail -c 5) -j ACCEPT
+sudo iptables -A OUTPUT -p icmp --icmp-type echo-reply -o \$(ip a | grep 10.1.5.2 | tail -c 5) -d 10.1.5.3 -j ACCEPT
+sudo iptables -A OUTPUT -p icmp --icmp-type echo-request -o \$(ip a | grep 10.1.5.2 | tail -c 5) -d 10.1.5.3 -j ACCEPT
+sudo iptables -A INPUT -p icmp --icmp-type echo-reply -i \$(ip a | grep 10.1.5.2 | tail -c 5) -s 10.1.5.3 -j ACCEPT
+sudo iptables -A INPUT -i \$(ip a | grep 10.1.5.2 | tail -c 5) -s 10.1.2.0/24,10.1.3.0/24,10.1.4.0/24,10.1.5.3 -p tcp --dport 80 -j ACCEPT
+sudo iptables -A OUTPUT -o \$(ip a | grep 10.1.5.2 | tail -c 5) -d 10.1.2.0/24,10.1.3.0/24,10.1.4.0/24,10.1.5.3 -p tcp --sport 80 -j ACCEPT
 sudo iptables -P INPUT DROP
 sudo iptables -P OUTPUT DROP
 sudo iptables -P FORWARD DROP
@@ -115,16 +111,12 @@ sudo iptables -A INPUT -i lo -j ACCEPT
 sudo iptables -A OUTPUT -o lo -j ACCEPT
 sudo iptables -A INPUT -s 192.168.0.0/16 -j ACCEPT
 sudo iptables -A OUTPUT -d 192.168.0.0/16 -j ACCEPT
-sudo iptables -A INPUT -p tcp --dport 22 -s 10.1.5.0/24 -m state --state NEW,ESTABLISHED -j ACCEPT
-sudo iptables -A OUTPUT -p tcp --sport 22 -d 10.1.5.0/24 -m state --state ESTABLISHED -j ACCEPT
-sudo iptables -A OUTPUT -p tcp --dport 22 -s 10.1.5.0/24 -m state --state NEW,ESTABLISHED -j ACCEPT
-sudo iptables -A INPUT -p tcp --sport 22 -d 10.1.5.0/24 -m state --state ESTABLISHED -j ACCEPT
-sudo iptables -A FORWARD -p tcp -d 10.1.5.2 --dport 80 -m state --state NEW,ESTABLISHED -j NFQUEUE
-sudo iptables -A FORWARD -p tcp -s 10.1.5.2 --sport 80 -m state --state ESTABLISHED -j NFQUEUE
-sudo iptables -A INPUT -p icmp --icmp-type echo-request -s 10.1.5.0/24 -i \$(ip a | grep 10.1.5.3 | tail -c 5) -j ACCEPT
+sudo iptables -A FORWARD -p tcp -d 10.1.5.2 -s 10.1.2.0/24,10.1.3.0/24,10.1.4.0/24 --dport 80 -m state --state NEW,ESTABLISHED -j NFQUEUE
+sudo iptables -A FORWARD -p tcp -s 10.1.5.2 -d 10.1.2.0/24,10.1.3.0/24,10.1.4.0/24 --sport 80 -m state --state ESTABLISHED -j NFQUEUE
+sudo iptables -A INPUT -p icmp --icmp-type echo-request -s 10.1.5.2 -i \$(ip a | grep 10.1.5.3 | tail -c 5) -j ACCEPT
 sudo iptables -A OUTPUT -p icmp --icmp-type echo-reply -o \$(ip a | grep 10.1.5.3 | tail -c 5) -j ACCEPT
-sudo iptables -A OUTPUT -p icmp --icmp-type echo-request -o \$(ip a | grep 10.1.5.3 | tail -c 5) -j ACCEPT
-sudo iptables -A INPUT -p icmp --icmp-type echo-reply -i \$(ip a | grep 10.1.5.3 | tail -c 5) -j ACCEPT
+sudo iptables -A OUTPUT -p icmp --icmp-type echo-request -o \$(ip a | grep 10.1.5.3 | tail -c 5) -d 10.1.5.2 -j ACCEPT
+sudo iptables -A INPUT -p icmp --icmp-type echo-reply -i \$(ip a | grep 10.1.5.3 | tail -c 5) -s 10.1.5.2 -j ACCEPT
 sudo iptables -A OUTPUT -p tcp --dport 80 -d 10.1.5.2 -o \$(ip a | grep 10.1.5.3 | tail -c 5) -j ACCEPT
 sudo iptables -A INPUT -p tcp --sport 80 -s 10.1.5.2 -i \$(ip a | grep 10.1.5.3 | tail -c 5) -j ACCEPT
 sudo iptables -P INPUT DROP

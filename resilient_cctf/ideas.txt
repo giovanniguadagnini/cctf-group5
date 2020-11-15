@@ -14,13 +14,13 @@ ATTACK PHASE:
 
 DEFENSE PHASE:
     1) Enable FW in gateway and server 
-        allow http[80] from clients network 
-        and ssh[22] only from deterlab and from network shared between server and gateway (also from deterlab network)
+        allow http[80] from clients network and from gw (for test purpose)
+        and ssh[22] only from deterlab
     2) Enable syncookies to avoid syn flood attacks
     3) Enable defense modules for apache2 (libapache2-mod-evasive). (https://phoenixnap.com/kb/apache-mod-evasive)
     4) Install snort in inline mode in gateway machine.
         Anomaly detection, track by_scr and see if client is sending more than 1 request per second (block).
-    5) Drop all ingoing ICMP packets on the server.
+    5) Drop all ingoing ICMP packets on the server except from gw.
     6) Check all the open ports (what service is running on each open port).
     7) Optimize apache threads for the available memory ((tot_memory*1024)/average_weight_apache2_process)-memory_other_programs
         ps -ylC apache2 --sort:rss

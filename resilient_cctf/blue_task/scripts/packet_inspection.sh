@@ -13,4 +13,4 @@ then
     TIME=$1
 fi
 
-sudo timeout $TIME tcpflow -p -c -i eth2 "dst 10.1.5.2 and port 80"
+sudo timeout $TIME tcpflow -p -c -i $ETH "dst 10.1.5.2 and port 80"
