@@ -63,4 +63,4 @@ for key in client_packets_map:
     else:
         print(key + " packets: " + str(client_packets_map[key]))
 
-os.system("rm -rf *.txt")
+os.system("mv " + filename + " " + filename + ".old")
