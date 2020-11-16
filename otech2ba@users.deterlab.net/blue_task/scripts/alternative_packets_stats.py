@@ -84,13 +84,12 @@ def process_packet(packet):
 
         if packet.haslayer(TCP):
             #Flag S == Syn packet
-            if packet[TCP].flags & 0x02:
+            if packet[TCP].flags == "S":
                 number_tcp_syn += 1
                 length_tcp_syn += len(packet)
                 #print("SYN packet received from: " + str(ip) + ". This is the " + str(x) + " from this address");
-            #If not flag SYN, FIN or RST, then it is a data packet
-            if not packet[TCP].flags & 0x02 and not packet[TCP].flags & 0x01  and not packet[TCP].flags & 0x04:
-                #print(packet[TCP].flags)
+            #If not flag SYN, FIUN or RST, then it is a data packet
+            if not packet[TCP].flags == "S" and not packet[TCP].flags == "F"  and not packet[TCP].flags == "R":
                 number_tcp_data += 1
                 length_tcp_data += len(packet)
                 #print("DATA packet received from: " + str(ip) + ". This is the " + str(x) + " from this address");
@@ -98,21 +97,14 @@ def process_packet(packet):
         number_packet += 1
         #Every five seconds, print a report, reset all necessary variables
         if (time.time() - oldTime) > 5:
-            print ("Report:")
+            print ("Report: \n")
             print ("We have received {:d} packets in the last five seconds".format(number_packet))
             print ("{:d} SYN packets , total length {:d}".format(number_tcp_syn, length_tcp_syn))
             print ("{:d} DATA packets , total length {:d}".format(number_tcp_data, length_tcp_data))
             print ("{:d} UDP packets , total length {:d}".format(number_udp, length_udp))
 
-            print ("Packets received come from:")
-            for key, value in list_clients.iteritems() :
-                print("Source: {}, nb packets: {:d}, length packets: {:d}".format(key, value[0], value[1]))
-            print("")
-            #RESET DICTIONNARY
-            list_clients = dict()
-                #print (key, value)
-            #print ("See clients_info for detailed dump")
-            #pickle.dump(list_clients,open("clients_info","wb"))
+            print ("See clients_info for detailed dump")
+            pickle.dump(list_clients,open("clients_info","wb"))
             oldTime = time.time()
             number_tcp_syn = length_tcp_syn = number_tcp_data = length_tcp_data = number_udp = length_udp = number_packet = 0
 
