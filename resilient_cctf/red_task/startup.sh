@@ -31,6 +31,10 @@ tar -xzf scapy-2.4.4.tar.gz
 cd \$CURRENT
 sudo mv /home/cctf/lib/scapy-2.4.4/ /home/cctf/scripts/scapy
 sudo mv /home/cctf/scripts/junk_traffic.py /home/cctf/scripts/scapy/
+sudo mv /home/cctf/scripts/HTTPflood.py /home/cctf/scripts/scapy/
+
+sudo iptables -F
+sudo iptables -A OUTPUT -p tcp --tcp-flags RST RST -d 10.1.5.2 -j DROP
 EOF
 
 echo "[client$c] /home/cctf folder created, flooder installed, script uploaded"
