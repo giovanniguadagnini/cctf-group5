@@ -5,6 +5,7 @@
 
 from scapy.all import *
 import pickle
+import subprocess
 
 #number_XXX represent the number of packet received from this current "protocol" or flag
 #length_XXX represent the total number of byte received from this procol since the launch of our program 
@@ -23,7 +24,7 @@ list_clients = dict()
 # The total packet counter
 number_packet = 0
 
-
+oldTime = time.time()
 
 
 def sniff_packets(iface=None):
@@ -51,7 +52,8 @@ def process_packet(packet):
     global length_icmp
     global list_clients
     global number_packet
-
+    global oldTime
+    
     # If the packet is on the IP layer, IE we want to analyze it
     if packet.haslayer(IP):
         #Get its address
@@ -73,29 +75,39 @@ def process_packet(packet):
         if packet.haslayer(ICMP):
             number_icmp += 1
             length_icmp += len(packet)
-            print("ICMP packet received from: " + str(ip) + ". This is the " + str(x) + " from this address");
+            #print("ICMP packet received from: " + str(ip) + ". This is the " + str(x) + " from this address");
 
         if packet.haslayer(UDP):
             number_udp += 1
             length_udp += len(packet)
-            print("UDP packet received from: " + str(ip) + ". This is the " + str(x) + " from this address");
+            #print("UDP packet received from: " + str(ip) + ". This is the " + str(x) + " from this address");
 
         if packet.haslayer(TCP):
             #Flag S == Syn packet
             if packet[TCP].flags == "S":
                 number_tcp_syn += 1
                 length_tcp_syn += len(packet)
-                print("SYN packet received from: " + str(ip) + ". This is the " + str(x) + " from this address");
+                #print("SYN packet received from: " + str(ip) + ". This is the " + str(x) + " from this address");
             #If not flag SYN, FIUN or RST, then it is a data packet
             if not packet[TCP].flags == "S" and not packet[TCP].flags == "F"  and not packet[TCP].flags == "R":
                 number_tcp_data += 1
                 length_tcp_data += len(packet)
-                print("DATA packet received from: " + str(ip) + ". This is the " + str(x) + " from this address");
+                #print("DATA packet received from: " + str(ip) + ". This is the " + str(x) + " from this address");
 
-        #Every fifty packet received, dump the content of our dictionnary into the clients_info file
         number_packet += 1
-        if number_packet % 50 == 0:
+        #Every five seconds, print a report, reset all necessary variables
+        if (time.time() - oldTime) > 5:
+            print ("Report: \n")
+            print ("We have received {:d} packets in the last five seconds".format(number_packet))
+            print ("{:d} SYN packets , total length {:d}".format(number_tcp_syn, length_tcp_syn))
+            print ("{:d} DATA packets , total length {:d}".format(number_tcp_data, length_tcp_data))
+            print ("{:d} UDP packets , total length {:d}".format(number_udp, length_udp))
+
+            print ("See clients_info for detailed dump")
             pickle.dump(list_clients,open("clients_info","wb"))
+            oldTime = time.time()
+            number_tcp_syn = length_tcp_syn = number_tcp_data = length_tcp_data = number_udp = length_udp = number_packet = 0
+
 
 if __name__ == "__main__":
     import argparse
