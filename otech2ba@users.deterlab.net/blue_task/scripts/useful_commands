@@ -25,6 +25,3 @@ Useful defense commands
     18. cat httpd | less => logs for apache2
     19. ss | grep ssh => check for active ssh connections
         If anything suspicious is found: sudo kill <pid of ssh session>
-
-FIX to script chars
-    sed -i -e 's/\r$//' scriptname.sh

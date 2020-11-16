@@ -12,18 +12,23 @@ fi
 echo "You'll find eventual errors in errors/startup_servet.txt file."
 
 ### Page creation in /var/www/html
-echo "[server] upload of all the scripts"
+echo "[server] creation of webpages and upload of all scripts"
 ssh $SERVER 1> /dev/null 2>>errors/startup_server.txt <<EOF
+sudo bash
+for (( c=1; c<11; c++ ))
+do  
+   echo "<html><body><h1>Page \$c</h1></body></html>" > /var/www/html/\$c.html
+done
+rm /var/www/html/index.html
 mkdir /home/cctf
 chmod 777 /home/cctf
 cp -r resilient_cctf/blue_task/scripts /home/cctf
-sudo chmod +x /home/cctf -R
 exit
 EOF
-echo "[server] created folder /home/cctf and uploaded the scripts"
+echo "[server] Html pages created in /var/www/html, created folder /home/cctf and uploaded scripts"
 
 ### Install the server in the server machine and change the port 
-echo "[server] Installation of the apache2 webserver, creation of webpages ..."
+echo "[server] Installation of the apache2 webserver ..."
 ssh $SERVER 1> /dev/null 2>errors/startup_server.txt <<EOF
 sudo iptables -F
 sudo iptables -A INPUT -i lo -j ACCEPT
@@ -36,8 +41,6 @@ sudo iptables -A OUTPUT -p icmp --icmp-type echo-request -o \$(ip a | grep 10.1.
 sudo iptables -A INPUT -p icmp --icmp-type echo-reply -i \$(ip a | grep 10.1.5.2 | tail -c 5) -s 10.1.5.3 -j ACCEPT
 sudo iptables -A INPUT -i \$(ip a | grep 10.1.5.2 | tail -c 5) -s 10.1.2.0/24,10.1.3.0/24,10.1.4.0/24,10.1.5.3 -p tcp --dport 80 -j ACCEPT
 sudo iptables -A OUTPUT -o \$(ip a | grep 10.1.5.2 | tail -c 5) -d 10.1.2.0/24,10.1.3.0/24,10.1.4.0/24,10.1.5.3 -p tcp --sport 80 -j ACCEPT
-sudo iptables -A INPUT -i \$(ip a | grep 10.1.5.2 | tail -c 5) -d 10.1.5.2 -p icmp --icmp-type echo-request -m hashlimit --hashlimit-name icmp --hashlimit-mode srcip --hashlimit 1/second --hashlimit-burst 5 -j ACCEPT
-sudo iptables -A OUTPUT -o \$(ip a | grep 10.1.5.2 | tail -c 5) -s 10.1.5.2 -p icmp --icmp-type echo-reply -m hashlimit --hashlimit-name icmp --hashlimit-mode srcip --hashlimit 1/second --hashlimit-burst 5 -j ACCEPT
 sudo iptables -P INPUT DROP
 sudo iptables -P OUTPUT DROP
 sudo iptables -P FORWARD DROP
@@ -46,14 +49,6 @@ then
    sudo apt-get update 
    sudo apt-get install apache2 apache2-utils libapache2-mod-qos -y
 fi
-
-sudo bash
-for (( c=1; c<11; c++ ))
-do  
-   echo "<html><body><h1>Page \$c</h1></body></html>" > /var/www/html/\$c.html
-done
-rm /var/www/html/index.html
-
 sudo sysctl -w net.ipv4.tcp_syncookies=1
 sudo sysctl -w net.ipv4.tcp_max_syn_backlog=100000
 if ! which tcpflow &> /dev/null
@@ -67,10 +62,10 @@ sudo echo '    QS_SrvMaxConn       100 # limits the connections for this virtual
 sudo echo '    QS_SrvMaxConnClose  200 # allows keep-alive support till the server reaches 200 connections:' >> /etc/apache2/mods-available/qos.conf
 sudo echo '    QS_SrvMaxConnPerIP  10 # allows max 50 connections from a single ip address:' >> /etc/apache2/mods-available/qos.conf
 sudo echo '</IfModule>' >> /etc/apache2/mods-available/qos.conf
-sed -i .old "s/Timeout 300$/Timeout 1/" /etc/apache2/apache2.conf
+sed -i .old "s/Timeout 300$/Timeout 10/" /etc/apache2/apache2.conf
 sudo service apache2 restart
 EOF
-echo "[server] Web server apache2 installed, html pages created in /var/www/html, and basic iptables rules enabled"
+echo "[server] Web server apache2 installed and basic iptables rules enabled"
 
 #Snort installation copied from /share/education/SecuringLegacySystems_JHU/Snort/SnortInstall.sh
 echo "[gateway] Snort installation please wait."
@@ -136,7 +131,7 @@ mkdir /home/cctf/snort
 chmod 777 /home/cctf/snort
 mkdir /home/cctf/snort/alerts
 chmod 777 /home/cctf/snort/alerts
-echo 'drop tcp any any -> 10.1.5.2 80 (msg:"Flooder SYN detected and blocked" sid:1000001; flags: S; fragbits: !D;)' > /home/cctf/snort/snort.conf
+echo 'drop tcp any any -> 10.1.5.2 80 (msg:"Flooder SYN detected and blocked" sid:1000001; msg:"test"; flags: S; fragbits: !D;)' > /home/cctf/snort/snort.conf
 echo 'event_filter gen_id 1, sig_id 1000001, track by_src, count 1, seconds 10, type limit' >> /home/cctf/snort/snort.conf
 echo '#alert tcp any any -> 10.1.5.2 80 (msg: "TPC SYN detected"; sid: 1000003; rev: 1; flags:S;)' >> /home/cctf/snort/snort.conf
 echo '#rate_filter gen_id 1, sig_id 1000003, track by_src, count 50, seconds 1, new_action drop, timeout 10' >> /home/cctf/snort/snort.conf
@@ -165,14 +160,6 @@ sudo iptables -P OUTPUT DROP
 sudo iptables -P FORWARD DROP
 
 sudo snort --daq nfq -Q -c /home/cctf/snort/snort.conf -l /home/cctf/snort/alerts -D 
-
-
-sudo iptables -A INPUT -i \$(ip a | grep 10.1.1.3 | tail -c 5) -d 10.1.1.3 -p icmp --icmp-type echo-request -m hashlimit --hashlimit-name icmp_gw --hashlimit-mode srcip --hashlimit 1/second --hashlimit-burst 5 -j ACCEPT
-sudo iptables -A OUTPUT -o \$(ip a | grep 10.1.1.3 | tail -c 5) -s 10.1.1.3 -p icmp --icmp-type echo-reply -m hashlimit --hashlimit-name icmp_gw --hashlimit-mode srcip --hashlimit 1/second --hashlimit-burst 5 -j ACCEPT
-sudo iptables -A FORWARD -i \$(ip a | grep 10.1.1.3 | tail -c 5) -d 10.1.5.2 -p icmp -m hashlimit --hashlimit-name icmp_srv --hashlimit-mode srcip --hashlimit 1/second --hashlimit-burst 5 --icmp-type echo-request -j ACCEPT
-sudo iptables -A FORWARD -o \$(ip a | grep 10.1.1.3 | tail -c 5) -s 10.1.5.2 -p icmp -m hashlimit --hashlimit-name icmp_srv --hashlimit-mode srcip --hashlimit 1/second --hashlimit-burst 5 --icmp-type echo-reply -j ACCEPT
-
-
 exit
 EOF
 echo "[gateway] Enabled iptables rules in gateway machine, created folder /home/cctf and uploaded scripts"

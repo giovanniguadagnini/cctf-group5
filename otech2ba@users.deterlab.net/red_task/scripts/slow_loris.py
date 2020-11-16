@@ -9,8 +9,6 @@ import time
 #regular_headers = [ "User-agent: Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0",
 #                    "Accept-language: en-US,en,q=0.5"]
 
-wget_headers = ["User-Agent: Wget/1.19.4 (linux-gnu)", "Accept: */*", "Accept-Encoding: identity", "Host: " + str(sys.argv[5]) , "Connection: Keep-Alive"]
-nc_headers = ["User-Agent: nc/0.0.1", "Host: " + str(sys.argv[5]) , "Accept: */*"]
 #curl headers
 regular_headers = ["Host: " + str(sys.argv[5]) , "User-Agent: curl/7.58.0", "Accept: */*"]
 
