@@ -41,3 +41,5 @@ sudo iptables -I FORWARD 1 -m mark --mark 0x1/0x1 -j DROP
 
 Delete first rule in FORWARD
 sudo iptables -D FORWARD 1
+
+sudo iptables -L chain #get list of rule in a single chain
