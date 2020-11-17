@@ -14,7 +14,8 @@ ATTACK PHASE:
     11) Optimize the attack by analyzing the max number of packet a process can generate.
     12) Optimize the attack by analyzing the max number of packet the connection can send.
     13) Send many request when the server is still not installed.
-    14) As done for slow loris do the possible to make the attack look like genuine traffic. 
+    14) As done for slow loris do the possible to make the attack look like genuine traffic.
+    15) Spoof ip when running slow loris using iptables (sudo iptables -t nat -A POSTROUTING -j SNAT --to-source <genuine_ip_source>)
 
 DEFENSE PHASE:
     1) Enable FW in gateway and server 
