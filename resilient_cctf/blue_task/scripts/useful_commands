@@ -28,3 +28,16 @@ Useful defense commands
 
 FIX to script chars
     sed -i -e 's/\r$//' scriptname.sh
+
+IPTABLES RULE: (also can use kmp as algo)
+sudo iptables -I FORWARD 1 --match string --algo bm --from 30 --to 34 --hex-string '|ff ff|' -p tcp --dport 80 --syn --j DROP (check for window = 65535)
+sudo iptables -I FORWARD 1 --match string --algo bm --to 10 ! --hex-string '|4000|' -p  tcp --dport 80 --syn --j DROP (check for DF bit not setted typical of flooder)
+sudo iptables -I FORWARD 1 -m length --length 60 -p tcp --dport 80 --syn --j DROP
+
+Multiple step detection
+sudo iptables -t mangle -I FORWARD 1 -m string --algo bm --to 10 ! --hex-string '|4000|' -j MARK --or-mark 0x1
+sudo iptables -t mangle -I FORWARD 1 -m string --algo bm --from 30 --to 34 --hex-string '|ff ff|' -j MARK --and-mark 0xFFFFFFFE
+sudo iptables -I FORWARD 1 -m mark --mark 0x1/0x1 -j DROP
+
+Delete first rule in FORWARD
+sudo iptables -D FORWARD 1
