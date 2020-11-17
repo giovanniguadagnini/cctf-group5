@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ### Machines names
-PROJECT=".CCTF-g5.OffTech"
+PROJECT=".testctf5.OffTech"
 SERVER="server$PROJECT"
 GATEWAY="gateway$PROJECT"
 
