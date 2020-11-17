@@ -16,7 +16,7 @@ As red team: the scripts will be used in order to try to make unreachable the se
 #### Attack phase
 1) Launch statistics script.
 2) In case change snort rules and restart it with **sudo pkill snort; sudo snort --daq nfq -Q -c /home/cctf/snort/snort.conf -l /home/cctf/snort/alerts -D**  
-3) Evaluate the traffic and setup a rule to block eventual SYN with a specific form **iptables --append INPUT --match string --algo kmp --from start_index -to stop_index --hex-string '|<hex>|' --jump DROP**   
+3) Evaluate the traffic and setup a rule to block eventual SYN with a specific form **sudo iptables -I FORWARD 1 --match string --algo bm|kmp --from 30 --to 34 --hex-string '|ff ff|' -p tcp --dport 80 --syn --j DROP**, **sudo iptables --I FORWARD 1 -m length --length 60 -p tcp --dport 80 --syn --j DROP**
 
 #### Defense phase
 1) Start **genuine_client.sh** (default timer = 10 second to give less point to defenders).  

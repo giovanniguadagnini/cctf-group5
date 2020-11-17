@@ -34,3 +34,4 @@ DEFENSE PHASE:
     11) Make available the server as first as possible
     12) SNORT: Block packet with signature of the attack (example: [SYN, window=65535, size=60 bytes], [example:A-x 1111]) use the same tecnique during the cctf
     13) Allow ping only for testing (few packets every minute)
+    14) Drop fragmented packets.

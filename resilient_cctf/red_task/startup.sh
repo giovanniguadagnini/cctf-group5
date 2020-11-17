@@ -24,6 +24,7 @@ if ! which flooder &> /dev/null
 then
    /share/education/TCPSYNFlood_USC_ISI/install-flooder
 fi
+sudo apt install -y hping3
 cp -r resilient_cctf/red_task/lib /home/cctf
 CURRENT=\$(pwd)
 cd /home/cctf/lib
