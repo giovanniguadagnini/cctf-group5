@@ -13,12 +13,12 @@ As red team: the scripts will be used in order to try to make unreachable the se
 6) Login in client1/2/3 then run: **chmod +x resilient_cctf -R; ./resilient_cctf/red_task/startup.sh**  
 7) You'll find everything in /home/cctf folder.  
 
-#### Attack phase
+#### Defense phase
 1) Launch statistics script.
 2) In case change snort rules and restart it with **sudo pkill snort; sudo snort --daq nfq -Q -c /home/cctf/snort/snort.conf -l /home/cctf/snort/alerts -D**  
 3) Evaluate the traffic and setup a rule to block eventual SYN with a specific form **sudo iptables -I FORWARD 1 --match string --algo bm|kmp --from 30 --to 34 --hex-string '|ff ff|' -p tcp --dport 80 --syn --j DROP** (check for window = 65535), **sudo iptables -I FORWARD 1 --match string --algo bm --to 10 ! --hex-string '|4000|' -p  tcp --dport 80 --syn --j DROP** (check for DF bit not setted typical of flooder), **sudo iptables -I FORWARD 1 -m length --length 60 -p tcp --dport 80 --syn --j DROP**
 
-#### Defense phase
+#### Attack phase
 1) Start **genuine_client.sh** (default timer = 10 second to give less point to defenders).  
 2) Start the attack.  
 3) Launch change_rate.sh with genuine_client ip and timeout in second to set a lower timeout.  
