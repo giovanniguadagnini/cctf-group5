@@ -4,13 +4,13 @@
 As blue team: the scripts will be used to protect an apache2 web server from DoS attack.  
 As red team: the scripts will be used in order to try to make unreachable the server of the defeder team.
 
-### Step to startup the services and clients
+### Step to startup the machines
 1) Download last updates: **git pull**  
 2) Delete the folder in your deterlab machine (rm -rf resilient_cctf).  
 3) Update PROJECT variable in /resilient_cctf/blue_task/startup.sh and /resilient_cctf/red_task/startup.sh files.  
 4) Upload the everything to deterlab: **scp -r resilient_cctf otech2<id>@users.deterlab.net:.**  
 5) Login in server or gateway then run: **chmod +x resilient_cctf -R; ./resilient_cctf/blue_task/startup.sh**  
-6) Login in client1/2/3 then run: **chmod +x resilient_cctf -R; ./resilient_cctf/red_task/startup.sh**  
+6) Login in a client then run: **chmod +x resilient_cctf -R; ./resilient_cctf/red_task/startup.sh**  
 7) You'll find everything in /home/cctf folder.  
 
 #### Defense phase
@@ -27,3 +27,18 @@ As red team: the scripts will be used in order to try to make unreachable the se
 6) Reset the timeout to 10 using **./change_rate.sh genuine_client_ip 10**   
 
 ## Secure CCTF
+As blue team: the script will be used to protect a small php application
+As red team: the script will be used to attack a small php web application
+
+### Step to startup the machines
+1) Download last updates: **git pull**  
+2) Delete the folder in your deterlab machine (rm -rf secure_cctf).  
+3) Update PROJECT variable in /secure_cctf/blue_task/startup.sh and /secure_cctf/red_task/startup.sh files.  
+4) Upload the everything to deterlab: **scp -r secure_cctf otech2<id>@users.deterlab.net:.**  
+5) Login in server or gateway then run: **chmod +x secure_cctf -R; ./secure_cctf/blue_task/startup.sh**  
+6) Login in a client then run: **chmod +x secure_cctf -R; ./secure_cctf/red_task/startup.sh**  
+7) You'll find everything in /home/cctf folder.  
+
+#### Defense phase
+
+#### Attack phase
