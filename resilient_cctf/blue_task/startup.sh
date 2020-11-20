@@ -71,7 +71,7 @@ EOF
 echo "[server] Web server apache2 installed, html pages created in /var/www/html, and basic iptables rules enabled"
 
 ### Iptables rules
-echo "[gateway] Setting up iptables rules, uploading the scripts, starting snort"
+echo "[gateway] Setting up iptables rules, uploading the scripts"
 ssh $GATEWAY 1> /dev/null 2>>errors/startup_server.txt <<EOF
 sudo iptables -F
 sudo iptables -A INPUT -i lo -j ACCEPT

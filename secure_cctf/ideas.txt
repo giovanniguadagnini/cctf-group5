@@ -1,4 +1,8 @@
 ATTACK PHASE:
+    1) Evaluate the performace when the script have to download from the db data relative to a lot of operations.
+    2) Evaluate if it's possible to exploit the fact that transactions are not used to corrupt the db.
+    3) Evaluate if it's possible to use the log against the server memory, a lot of request -> log file becomes very big.
 
 DEFENSE PHASE:
-    
+    1) Evaluate to change the mysql root password.
+    1) Since flooding tecnique is not allowed evaluate if could be interesting to use Snort to detect and block eventual attacks.
