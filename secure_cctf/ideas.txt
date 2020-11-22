@@ -4,5 +4,11 @@ ATTACK PHASE:
     3) Evaluate if it's possible to use the log against the server memory, a lot of request -> log file becomes very big.
 
 DEFENSE PHASE:
+    0) Reuse iptables rules created for resilient_cctf. 
     1) Evaluate to change the mysql root password.
-    1) Since flooding tecnique is not allowed evaluate if could be interesting to use Snort to detect and block eventual attacks.
+    2) Since flooding tecnique is not allowed evaluate if could be interesting to use Snort to detect and block eventual attacks.
+    3) Allow users to access the db also without root privileges (the installation allow access only with root privileges).
+    4) Create an account with less privilege to be used in the php webapplication (select, update, insert only on the two tables).
+    5) Check username password when the user is already present in the system.
+    6) Use prepared statement to avoid sql injection.
+    7) Sanitize data retrieved from the db before print them on the page (?).

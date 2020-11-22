@@ -27,8 +27,8 @@ As red team: the scripts will be used in order to try to make unreachable the se
 6) Reset the timeout to 10 using **./change_rate.sh genuine_client_ip 10**   
 
 ## Secure CCTF
-As blue team: the script will be used to protect a small php application
-As red team: the script will be used to attack a small php web application
+As blue team: the script will be used to protect a small php application.  
+As red team: the script will be used to attack a small php web application.  
 
 ### Step to startup the machines
 1) Download last updates: **git pull**  
