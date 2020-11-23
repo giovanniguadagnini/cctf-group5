@@ -12,7 +12,7 @@ fi
 echo "You'll find eventual errors in errors/startup_servet.txt file."
 
 ### Page creation in /var/www/html
-echo "[server] installation of lampp"
+echo "[server] installation of lampp and iptables setup"
 ssh $SERVER 1> /dev/null 2>>errors/startup_server.txt <<EOF
 sudo iptables -F
 sudo iptables -A INPUT -i lo -j ACCEPT
@@ -41,7 +41,6 @@ sudo cat /proj/OffTech/cctf_secureserver/httpd.conf >> /etc/apache2/httpd.conf
 sudo /etc/init.d/apache2 restart
 sudo mysql -u"root" -p"rootmysql" < /proj/OffTech/cctf_secureserver/setup.sql
 sudo mysql -u"root" -p"rootmysql" < add_user.sql
-sudo mysql -u"root" -p"rootmysql" 
 EOF
 echo "[server] lampp installed and iptables configured"
 

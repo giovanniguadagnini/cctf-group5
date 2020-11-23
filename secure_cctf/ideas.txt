@@ -3,14 +3,22 @@ ATTACK PHASE:
     2) Evaluate if it's possible to exploit the fact that transactions are not used to corrupt the db.
     3) Evaluate if it's possible to use the log against the server memory, a lot of request -> log file becomes very big.
     4) Overflow the type in the database.
+    5) Create an account, do a lot of deposit and then request a lot of time the balance.
 
 DEFENSE PHASE:
     0) Reuse iptables rules created for resilient_cctf. 
     1) Evaluate to change the mysql root password.
     2) Since flooding tecnique is not allowed evaluate if could be interesting to use Snort to detect and block eventual attacks.
-    3) Allow users to access the db also without root privileges (the installation allow access only with root privileges).
+    3) Allow users to access the db also without root privileges (the installation allow access only with root privileges and without password).
     4) Create an account with less privilege to be used in the php webapplication (select, update, insert only on the two tables).
     5) Check username password when the user is already present in the system.
     6) Use prepared statement to avoid sql injection.
     7) Sanitize data retrieved from the db before print them on the page (?).
     8) Check the value to be added is an integer (not binary or hex)
+    9) Hash the password (be sure digest is smaller than len of the db field)
+    10) Rewrite balance function to avoid slowdowns when computing the balance for the check before witdraw or deposit operation.
+    11) Ask if it's ok to modify the balance function (it0's too slow)
+
+FOR THE DEBUGG:
+error_reporting(E_ALL);
+ini_set('display_errors','On');
