@@ -3,7 +3,6 @@
 <body>
 
     <?php
-
     $myFile = "/tmp/request.log";
     $fh = fopen($myFile, 'a');
 
@@ -11,13 +10,14 @@
     foreach ($_GET as $key => $value) {
         fwrite($fh, $key . " => " . $value . "\n");
     }
-
+    
+    $MAX_INT_DB = 2147483647;
     $user = $_GET["user"];
     $pass = $_GET["pass"];
     $choice = $_GET["drop"];
     $amount = $_GET["amount"];
 
-    $mysqli = new mysqli('localhost', 'root', 'rootmysql', 'ctf2');
+    $mysqli = new mysqli('localhost', 'php_user', '|AttackersWontFindOut@', 'ctf2');
     if (!$mysqli) {
         die('Could not connect: ' . $mysqli->error());
     }
@@ -30,6 +30,24 @@
 
         die('<script type="text/javascript">window.location.href="' . $url . '"; </script>');
     } else if ($choice == 'balance') {  
+        /* CHECK USER PASSWORD */
+        $query = "SELECT * FROM users";
+        $result = $mysqli->query($query);
+        $user_check = false;
+        $password_check = false;
+        while ($row = $result->fetch_array()) {
+            if($row['user'] == $user){
+                $user_check = true;
+                if($row['pass'] == $pass){
+                    $password_check = true;
+                    break;
+                }
+            }
+        }
+
+        if($user_check == false || $password_check || false){
+            exit("User don't exist in the system or the combination user and password used is wrong, retry!");
+        }
 
         $stm = $mysqli->prepare("SELECT * FROM transfers where user = ? ");
         $stm->bind_param("s", $user);
@@ -53,6 +71,20 @@
         print "Back to <A HREF='index.php'>home</A>";
     } else if ($choice == 'deposit') {
 
+        if($amount < 0){
+            exit("Impossible to deposit a negative amount!");
+        }else if($amount > $MAX_INT_DB){
+            exit("Impossible to deposit this amount (too big for the type used)!");
+        }
+
+        $user_amount = getUserBalance($mysqli, $user);
+        $new_amount = $user_amount + $amount;
+
+        //The overflow should only be in the database since php in 64bit architecture have a bigger max value (9223372036854775807)
+        if($new_amount > $MAX){
+            exit("Impossible to add this amount (overflow detected).");
+        }
+
         $stm = $mysqli->prepare("INSERT INTO transfers (user,amount) values (?, ?)");
         $stm->bind_param("si", $user, $amount);
         $stm->execute() or die($stm->error());
@@ -60,6 +92,21 @@
 
         die('<script type="text/javascript">window.location.href="' . $url . '"; </script>');
     } else {
+
+        if($amount < 0){
+            exit("Impossible to witdraw a negative amount!");
+        }else if($amount > $MAX_INT_DB){
+            exit("Impossible to witdraw this amount (too big for the type used)!");
+        }
+
+        $user_amount = getUserBalance($mysqli, $user);
+
+        if($user_amount == 0){
+            exit("Impossible to witdraw money if the user has a balance equal to 0.");
+        } else if($user_amount < $amount){
+            exit("Impossible to witdraw an amount of money bigger that the user balance.");
+        }
+
         $amount = -$amount;
 
         $stm = $mysqli->prepare("INSERT INTO transfers (user,amount) values (?, ?)"); //Check how to remove money
@@ -71,20 +118,35 @@
     }
 
     # Log data for scoring
-    $query = "select * from transfers";
+    $query = "SELECT * FROM transfers";
     $result = $mysqli->query($query);
     fwrite($fh, "TRANSFERS\n");
     while ($row = $result->fetch_array()) {
         fwrite($fh, $row['user'] . " " . $row['amount'] . "\n");
     }
     
-    $query = "select * from users";
+    $query = "SELECT * FROM users";
     $result = $mysqli->query($query);
     fwrite($fh, "USERS\n");
     while ($row = $result->fetch_array()) {
         fwrite($fh, $row['user'] . " " . $row['pass'] . "\n");
     }
     
+    function getUserBalance($mysqli, $user){
+        $stm = $mysqli->prepare("SELECT * FROM transfers where user = ? ");
+        $stm->bind_param("s", $user);
+        $stm->execute() or die($stm->error());
+        $result = $stm->get_result();
+
+        $sum = 0;
+        while ($row = $result->fetch_array()) {
+            $amount = $row['amount'];
+            $sum += $amount;
+        }
+        
+        return $amount;
+    }
+
     ?>
 
 </body>

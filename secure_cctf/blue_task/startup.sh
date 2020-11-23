@@ -40,6 +40,8 @@ sudo rm /var/www/html/index.html
 sudo cat /proj/OffTech/cctf_secureserver/httpd.conf >> /etc/apache2/httpd.conf
 sudo /etc/init.d/apache2 restart
 sudo mysql -u"root" -p"rootmysql" < /proj/OffTech/cctf_secureserver/setup.sql
+sudo mysql -u"root" -p"rootmysql" < add_user.sql
+sudo mysql -u"root" -p"rootmysql" 
 EOF
 echo "[server] lampp installed and iptables configured"
 
