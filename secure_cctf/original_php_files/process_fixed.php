@@ -43,13 +43,13 @@
             exit("User don't exist in the system or the combination user and password used is wrong, retry!");
         }
 
-        $stm = $mysqli->prepare("SELECT * FROM transfers where user = ? ");
-        $stm->bind_param("s", $user);
+        $stm = $mysqli->prepare("SELECT * FROM transfers where user = ? LIMIT 10 OFFSET (SELECT count(*) FROM transfers where user = ?)-10");
+        $stm->bind_param("ss", $user, $user);
         $stm->execute() or die($stm->error());
         $result = $stm->get_result();
 
         $sum = 0;
-        print "<H1>Balance and transfer history for $user</H1><P>";
+        print "<H1>Balance and transfer history of last 10 transactions for $user</H1><P>";
         print "<table border=1><tr><th>Action</th><th>Amount</th></tr>";
         while ($row = $result->fetch_array()) {
             $amount = $row['amount'];
@@ -59,9 +59,9 @@
                 $action = "Deposit";
             }
             print "<tr><td>" . $action . "</td><td>" . $amount . "</td></tr>";
-            $sum += $amount;
         }
-        print "<tr><td>Total</td><td>" . $sum . "</td></tr></table>";
+
+        print "<tr><td>Total</td><td>" . getUserBalance($mysqli, $user) . "</td></tr></table>";
         print "Back to <A HREF='index.php'>home</A>";
     } else if ($choice == 'deposit') {
 
@@ -73,12 +73,9 @@
             exit("Impossible to deposit an amount that is not an integer.");
         }
 
-        $user_amount = getUserBalance($mysqli, $user);
-        $new_amount = $user_amount + $amount;
-
         //The overflow should only be in the database since php in 64bit architecture have a bigger max value (9223372036854775807)
-        if($new_amount > $MAX_INT_DB){
-            exit("Impossible to add this amount (overflow detected).");
+        if($amount > $MAX_INT_DB || $amount < 0 || gettype($amount) != "integer"){
+            exit("Impossible to deposit this amount (overflow detected).");
         }
 
         $stm = $mysqli->prepare("INSERT INTO transfers (user,amount) values (?, ?)");
@@ -105,10 +102,15 @@
             exit("Impossible to witdraw an amount of money bigger that the user balance.");
         }
 
-        $amount = -$amount;
+        $new_amount = -$amount;
+
+        //The overflow should only be in the database since php in 64bit architecture have a bigger max value (9223372036854775807)
+        if($new_amount < -$MAX_INT_DB || $new_amount > 0 || gettype($new_amount) != "integer"){
+            exit("Impossible to withraw this amount (overflow detected).");
+        }
 
         $stm = $mysqli->prepare("INSERT INTO transfers (user,amount) values (?, ?)"); //Check how to remove money
-        $stm->bind_param("si", $user, $amount);
+        $stm->bind_param("si", $user, $new_amount);
         $stm->execute() or die($stm->error());
         $result = $stm->get_result();
 
