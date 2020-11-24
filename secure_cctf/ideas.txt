@@ -4,6 +4,7 @@ ATTACK PHASE:
     3) Evaluate if it's possible to use the log against the server memory, a lot of request -> log file becomes very big.
     4) Overflow the type in the database.
     5) Create an account, do a lot of deposit and then request a lot of time the balance.
+    6) Check if mass creating users could stop the databse from operating properly.
 
 DEFENSE PHASE:
     0) Reuse iptables rules created for resilient_cctf. 
