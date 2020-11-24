@@ -35,7 +35,7 @@
     if (!$mysqli) {
         die('Could not connect: ' . $mysqli->error());
     }
-    //$url = "process.php?user=$user&pass=$pass&drop=balance";
+    $url = "process.php?user=$user&pass=$pass&drop=balance";
     if ($choice == 'register') {
         $stm = $mysqli->prepare("INSERT INTO users (user, pass) VALUES (?, ?)");
         $stm->bind_param("ss", $user, $pass);
@@ -44,7 +44,7 @@
 
         print "User $user successfully!";
 
-        //die('<script type="text/javascript">window.location.href="' . $url . '"; </script>');
+        die('<script type="text/javascript">window.location.href="' . $url . '"; </script></body></html>');
     } else if ($choice == 'balance') {  
         /* CHECK USER PASSWORD */
         $stm = $mysqli->prepare("SELECT pass FROM users WHERE user = ?");
@@ -98,7 +98,7 @@
 
         print("Deposit of $amount for user $user completed successfully!");
 
-        //die('<script type="text/javascript">window.location.href="' . $url . '"; </script>');
+        die('<script type="text/javascript">window.location.href="' . $url . '"; </script></body></html>');
     } else if ($choice == 'withdraw') {
 
         if($amount < 0){
@@ -131,9 +131,10 @@
 
         print("Withdraw of $amount for user $user completed successfully!");
 
-        die('<script type="text/javascript">window.location.href="' . $url . '"; </script>');
+        die('<script type="text/javascript">window.location.href="' . $url . '"; </script></body></html>');
     } else {
         print "The specified operation is not allowed!";
+        die('<script type="text/javascript">window.location.href="' . $url . '"; </script></body></html>');
     }
 
     # Log data for scoring
