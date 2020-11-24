@@ -14,13 +14,13 @@ fi
 #Check if the user setted the number of requests, in case assign the value
 if [ "$1" == "1" ];
 then 
-curl -sS '10.1.5.2/process.php?user=$USER&pass=$PASS&drop=register'
+curl -sS "10.1.5.2/process.php?user=$USER&pass=$PASS&drop=register"
 COUNT=1
 while true
 do
-    curl -sS '10.1.5.2/process.php?user=$USER&pass=$PASS&drop=deposit&amount=10' &
+    curl -sS "10.1.5.2/process.php?user=$USER&pass=$PASS&drop=deposit&amount=10" &
     sleep 1
-    curl -sS '10.1.5.2/process.php?user=$USER&pass=$PASS&drop=withdraw&amount=10' &
+    curl -sS "10.1.5.2/process.php?user=$USER&pass=$PASS&drop=withdraw&amount=10" &
     sleep 1
     COUNT=$((COUNT+2))
     echo "$COUNT operation requested"
@@ -33,7 +33,7 @@ then
 
 while true
 do
-    curl -sS '10.1.5.2/process.php?user=$USER&pass=$PASS&drop=balance' &
+    curl -sS "10.1.5.2/process.php?user=$USER&pass=$PASS&drop=balance" &
     sleep 1
 done
 fi

@@ -57,7 +57,7 @@
         }
 
         $stm = $mysqli->prepare("SELECT * FROM transfers WHERE user = ? ORDER BY id DESC LIMIT 10");
-        $stm->bind_param("ss", $user, $user  );
+        $stm->bind_param("s", $user);
         $stm->execute() or die($stm->error());
         $result = $stm->get_result();
 
