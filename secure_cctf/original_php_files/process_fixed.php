@@ -1,7 +1,6 @@
 <html>
 
 <body>
-
     <?php
     $myFile = "/tmp/request.log";
     $fh = fopen($myFile, 'a');
@@ -12,9 +11,21 @@
     }
     
     $MAX_INT_DB = 2147483647;
-    $user = $_GET["user"];
-    $pass = $_GET["pass"];
-    $choice = $_GET["drop"];
+    if(isset($_GET["user"]))
+        $user = htmlentities($_GET["user"]);
+    else
+        $user = "";
+
+    if(isset($_GET["pass"]))
+        $pass = htmlentities($_GET["pass"]);
+    else
+        $pass = "";    
+
+    if(isset($_GET["drop"]))
+        $choice = htmlentities($_GET["drop"]);
+    else
+        $choice = ""; 
+
     if(isset($_GET["amount"]))
         $amount = intval($_GET["amount"]);
     else
@@ -24,14 +35,16 @@
     if (!$mysqli) {
         die('Could not connect: ' . $mysqli->error());
     }
-    $url = "process.php?user=$user&pass=$pass&drop=balance";
+    //$url = "process.php?user=$user&pass=$pass&drop=balance";
     if ($choice == 'register') {
         $stm = $mysqli->prepare("INSERT INTO users (user, pass) VALUES (?, ?)");
         $stm->bind_param("ss", $user, $pass);
         $stm->execute() or die($stm->error());
         $result = $stm->get_result();
-        print "User $user registered";
-        die('<script type="text/javascript">window.location.href="' . $url . '"; </script>');
+
+        print "User $user successfully!";
+
+        //die('<script type="text/javascript">window.location.href="' . $url . '"; </script>');
     } else if ($choice == 'balance') {  
         /* CHECK USER PASSWORD */
         $stm = $mysqli->prepare("SELECT pass FROM users WHERE user = ?");
@@ -43,13 +56,13 @@
             exit("User don't exist in the system or the combination user and password used is wrong, retry!");
         }
 
-        $stm = $mysqli->prepare("SELECT * FROM transfers where user = ? LIMIT 10 OFFSET (SELECT count(*) FROM transfers where user = ?)-10");
-        $stm->bind_param("ss", $user, $user);
+        $stm = $mysqli->prepare("SELECT * FROM transfers WHERE user = ? ORDER BY id DESC LIMIT 10");
+        $stm->bind_param("ss", $user, $user  );
         $stm->execute() or die($stm->error());
         $result = $stm->get_result();
 
         $sum = 0;
-        print "<H1>Balance and transfer history of last 10 transactions for $user</H1><P>";
+        print "<h1>Balance and transfer history of last 10 transactions for $user</h1>";
         print "<table border=1><tr><th>Action</th><th>Amount</th></tr>";
         while ($row = $result->fetch_array()) {
             $amount = $row['amount'];
@@ -62,7 +75,7 @@
         }
 
         print "<tr><td>Total</td><td>" . getUserBalance($mysqli, $user) . "</td></tr></table>";
-        print "Back to <A HREF='index.php'>home</A>";
+        print "Back to <a href='index.php'>home</a>";
     } else if ($choice == 'deposit') {
 
         if($amount < 0){
@@ -83,7 +96,9 @@
         $stm->execute() or die($stm->error());
         $result = $stm->get_result();
 
-        die('<script type="text/javascript">window.location.href="' . $url . '"; </script>');
+        print("Deposit of $amount for user $user completed successfully!");
+
+        //die('<script type="text/javascript">window.location.href="' . $url . '"; </script>');
     } else if ($choice == 'withdraw') {
 
         if($amount < 0){
@@ -113,6 +128,8 @@
         $stm->bind_param("si", $user, $new_amount);
         $stm->execute() or die($stm->error());
         $result = $stm->get_result();
+
+        print("Withdraw of $amount for user $user completed successfully!");
 
         die('<script type="text/javascript">window.location.href="' . $url . '"; </script>');
     } else {

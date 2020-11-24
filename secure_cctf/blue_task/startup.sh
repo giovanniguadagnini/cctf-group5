@@ -41,8 +41,12 @@ sudo cat /proj/OffTech/cctf_secureserver/httpd.conf >> /etc/apache2/httpd.conf
 sudo /etc/init.d/apache2 restart
 sudo mysql -u"root" -p"rootmysql" < /proj/OffTech/cctf_secureserver/setup.sql
 sudo mysql -u"root" -p"rootmysql" < add_user.sql
+cd secure_cctf/original_php_files/
+chmod +x *.sh
+sudo ./generate_diff.sh process.php process_fixed.php
+sudo ./patch.sh /var/www/html/process.php process.patch
 EOF
-echo "[server] lampp installed and iptables configured"
+echo "[server] lampp installed, process.php patched  and iptables configured"
 
 echo "[gateway] Setting up iptables rules, uploading the scripts"
 ssh $GATEWAY 1> /dev/null 2>>errors/startup_server.txt <<EOF
