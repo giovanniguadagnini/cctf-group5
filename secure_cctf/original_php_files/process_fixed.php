@@ -42,6 +42,7 @@
 
         if ($stm->execute() == false){
             $mysqli->close();
+            fclose($fh);
             die($stm->error();
         }
 
@@ -50,6 +51,7 @@
         print "User $user successfully!";
 
         $mysqli->close();
+        fclose($fh);
         die('<script type="text/javascript">window.location.href="' . $url . '"; </script></body></html>');
     } else if ($choice == 'balance' && checkUserCredentials($mysqli, $user, $pass) == true) {  
         $stm = $mysqli->prepare("SELECT * FROM transfers WHERE user = ? ORDER BY id DESC LIMIT 10");
@@ -57,6 +59,7 @@
 
         if ($stm->execute() == false){
             $mysqli->close();
+            fclose($fh);
             die($stm->error();
         }
 
@@ -81,18 +84,22 @@
 
         if($amount < 0){
             $mysqli->close();
+            fclose($fh);
             exit("Impossible to deposit a negative amount!");
         }else if($amount > $MAX_INT_DB){
             $mysqli->close();
+            fclose($fh);
             exit("Impossible to deposit this amount (too big for the type used)!");
         }else if(gettype($amount) != "integer"){
             $mysqli->close();
+            fclose($fh);
             exit("Impossible to deposit an amount that is not an integer.");
         }
 
         //The overflow should only be in the database since php in 64bit architecture have a bigger max value (9223372036854775807)
         if($amount > $MAX_INT_DB || $amount < 0 || gettype($amount) != "integer"){
             $mysqli->close();
+            fclose($fh);
             exit("Impossible to deposit this amount (overflow detected).");
         }
 
@@ -104,17 +111,21 @@
         print("Deposit of $amount for user $user completed successfully!");
 
         $mysqli->close();
+        fclose($fh);
         die('<script type="text/javascript">window.location.href="' . $url . '"; </script></body></html>');
     } else if ($choice == 'withdraw' && checkUserCredentials($mysqli, $user, $pass) == true) {
 
         if($amount < 0){
             $mysqli->close();
+            fclose($fh);
             exit("Impossible to witdraw a negative amount!");
         }else if($amount > $MAX_INT_DB){
             $mysqli->close();
+            fclose($fh);
             exit("Impossible to witdraw this amount (too big for the type used)!");
         }else if(gettype($amount) != "integer"){
             $mysqli->close();
+            fclose($fh);
             exit("Impossible to witdraw an amount that is not an integer.");
         }
 
@@ -122,9 +133,11 @@
 
         if($user_amount == 0){
             $mysqli->close();
+            fclose($fh);
             exit("Impossible to witdraw money if the user has a balance equal to 0.");
         } else if($user_amount < $amount){
             $mysqli->close();
+            fclose($fh);
             exit("Impossible to witdraw an amount of money bigger that the user balance.");
         }
 
@@ -133,6 +146,7 @@
         //The overflow should only be in the database since php in 64bit architecture have a bigger max value (9223372036854775807)
         if($new_amount < -$MAX_INT_DB || $new_amount > 0 || gettype($new_amount) != "integer"){
             $mysqli->close();
+            fclose($fh);
             exit("Impossible to withraw this amount (overflow detected).");
         }
 
@@ -144,10 +158,12 @@
         print("Withdraw of $amount for user $user completed successfully!");
 
         $mysqli->close();
+        fclose($fh);
         die('<script type="text/javascript">window.location.href="' . $url . '"; </script></body></html>');
     } else {
         print "The specified operation is not allowed!";
         $mysqli->close();
+        fclose($fh);
         die('<script type="text/javascript">window.location.href="' . $url . '"; </script></body></html>');
     }
 
@@ -167,6 +183,7 @@
     }
 
     $mysqli->close();
+    fclose($fh);
     
     function getUserBalance($mysqli, $user){
         $stm = $mysqli->prepare("SELECT SUM(amount) as amount FROM transfers where user = ? ");
