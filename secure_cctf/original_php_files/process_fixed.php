@@ -39,16 +39,27 @@
     if ($choice == 'register') {
         $stm = $mysqli->prepare("INSERT INTO users (user, pass) VALUES (?, ?)");
         $stm->bind_param("ss", $user, $pass);
-        $stm->execute() or die($stm->error());
+
+        if ($stm->execute() == false){
+            $mysqli->close();
+            die($stm->error();
+        }
+
         $result = $stm->get_result();
 
         print "User $user successfully!";
 
+        $mysqli->close();
         die('<script type="text/javascript">window.location.href="' . $url . '"; </script></body></html>');
     } else if ($choice == 'balance' && checkUserCredentials($mysqli, $user, $pass) == true) {  
         $stm = $mysqli->prepare("SELECT * FROM transfers WHERE user = ? ORDER BY id DESC LIMIT 10");
         $stm->bind_param("s", $user);
-        $stm->execute() or die($stm->error());
+
+        if ($stm->execute() == false){
+            $mysqli->close();
+            die($stm->error();
+        }
+
         $result = $stm->get_result();
 
         $sum = 0;
@@ -69,15 +80,19 @@
     } else if ($choice == 'deposit' && checkUserCredentials($mysqli, $user, $pass) == true) {
 
         if($amount < 0){
+            $mysqli->close();
             exit("Impossible to deposit a negative amount!");
         }else if($amount > $MAX_INT_DB){
+            $mysqli->close();
             exit("Impossible to deposit this amount (too big for the type used)!");
         }else if(gettype($amount) != "integer"){
+            $mysqli->close();
             exit("Impossible to deposit an amount that is not an integer.");
         }
 
         //The overflow should only be in the database since php in 64bit architecture have a bigger max value (9223372036854775807)
         if($amount > $MAX_INT_DB || $amount < 0 || gettype($amount) != "integer"){
+            $mysqli->close();
             exit("Impossible to deposit this amount (overflow detected).");
         }
 
@@ -88,22 +103,28 @@
 
         print("Deposit of $amount for user $user completed successfully!");
 
+        $mysqli->close();
         die('<script type="text/javascript">window.location.href="' . $url . '"; </script></body></html>');
     } else if ($choice == 'withdraw' && checkUserCredentials($mysqli, $user, $pass) == true) {
 
         if($amount < 0){
+            $mysqli->close();
             exit("Impossible to witdraw a negative amount!");
         }else if($amount > $MAX_INT_DB){
+            $mysqli->close();
             exit("Impossible to witdraw this amount (too big for the type used)!");
         }else if(gettype($amount) != "integer"){
+            $mysqli->close();
             exit("Impossible to witdraw an amount that is not an integer.");
         }
 
         $user_amount = getUserBalance($mysqli, $user);
 
         if($user_amount == 0){
+            $mysqli->close();
             exit("Impossible to witdraw money if the user has a balance equal to 0.");
         } else if($user_amount < $amount){
+            $mysqli->close();
             exit("Impossible to witdraw an amount of money bigger that the user balance.");
         }
 
@@ -111,6 +132,7 @@
 
         //The overflow should only be in the database since php in 64bit architecture have a bigger max value (9223372036854775807)
         if($new_amount < -$MAX_INT_DB || $new_amount > 0 || gettype($new_amount) != "integer"){
+            $mysqli->close();
             exit("Impossible to withraw this amount (overflow detected).");
         }
 
@@ -121,9 +143,11 @@
 
         print("Withdraw of $amount for user $user completed successfully!");
 
+        $mysqli->close();
         die('<script type="text/javascript">window.location.href="' . $url . '"; </script></body></html>');
     } else {
         print "The specified operation is not allowed!";
+        $mysqli->close();
         die('<script type="text/javascript">window.location.href="' . $url . '"; </script></body></html>');
     }
 
@@ -141,6 +165,8 @@
     while ($row = $result->fetch_array()) {
         fwrite($fh, $row['user'] . " " . $row['pass'] . "\n");
     }
+
+    $mysqli->close();
     
     function getUserBalance($mysqli, $user){
         $stm = $mysqli->prepare("SELECT SUM(amount) as amount FROM transfers where user = ? ");
