@@ -11,15 +11,19 @@
     }
     
     $MAX_INT_DB = 2147483647;
-     #Setting user and password to "" allow the attacker to create an user without password, or an empty user, Which I believe count as "inconsistent state"
-    if(isset($_GET["user"]))
+    
+    #Setting user and password to "" allow the attacker to create an user without password, or an empty user, Which I believe count as "inconsistent state"
+    if(isset($_GET["user"])){
         $user = htmlentities($_GET["user"]);
-    else
-        die("No user provided");
+        if(strlen($user) > 20){
+            die("Username is too big </body></html>");
+        }
+    }else
+        die("No user provided </body></html>");
         $user = "";
 
     if(isset($_GET["pass"]))
-        $pass = htmlentities($_GET["pass"]);
+        $pass = $_GET["pass"];
     else
         die("No password provided");
         $pass = "";    
@@ -41,7 +45,7 @@
     $url = "process.php?user=$user&pass=$pass&drop=balance";
     if ($choice == 'register') {
         $stm = $mysqli->prepare("INSERT INTO users (user, pass) VALUES (?, ?)");
-        $stm->bind_param("ss", $user, $pass);
+        $stm->bind_param("ss", $user, password_hash($pass, PASSWORD_DEFAULT));
 
         if ($stm->execute() == false){
             $mysqli->close();
@@ -206,7 +210,7 @@
         $stm->execute() or die($stm->error());
         $result = $stm->get_result();
         $row = $result->fetch_array();
-        if($row['pass'] != $pass){
+        if(!password_verify($pass, $row['pass'])){
             exit("User doesn't exist in the system or the combination user and password used is wrong, retry!");
             return false;
         }

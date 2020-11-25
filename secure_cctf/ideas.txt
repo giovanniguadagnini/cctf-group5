@@ -23,6 +23,7 @@ DEFENSE PHASE:
     11) Ask if it's ok to modify the balance function (it's too slow)
     12) Modified php script to return only the last 10 transfer.
     13) No need to check that total balance is bigger than max_int since sql is casting the sum to the appropriate variable.
+    14) Check size of all the types before adding to the db.
 
 FOR THE DEBUGG:
 error_reporting(E_ALL);
