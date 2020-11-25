@@ -45,17 +45,7 @@
         print "User $user successfully!";
 
         die('<script type="text/javascript">window.location.href="' . $url . '"; </script></body></html>');
-    } else if ($choice == 'balance') {  
-        /* CHECK USER PASSWORD */
-        $stm = $mysqli->prepare("SELECT pass FROM users WHERE user = ?");
-        $stm->bind_param("s", $user);
-        $stm->execute() or die($stm->error());
-        $result = $stm->get_result();
-        $row = $result->fetch_array();
-        if($row['pass'] != $pass){
-            exit("User don't exist in the system or the combination user and password used is wrong, retry!");
-        }
-
+    } else if ($choice == 'balance' && checkUserCredentials($mysqli, $user, $pass) == true) {  
         $stm = $mysqli->prepare("SELECT * FROM transfers WHERE user = ? ORDER BY id DESC LIMIT 10");
         $stm->bind_param("s", $user);
         $stm->execute() or die($stm->error());
@@ -76,7 +66,7 @@
 
         print "<tr><td>Total</td><td>" . getUserBalance($mysqli, $user) . "</td></tr></table>";
         print "Back to <a href='index.php'>home</a>";
-    } else if ($choice == 'deposit') {
+    } else if ($choice == 'deposit' && checkUserCredentials($mysqli, $user, $pass) == true) {
 
         if($amount < 0){
             exit("Impossible to deposit a negative amount!");
@@ -99,7 +89,7 @@
         print("Deposit of $amount for user $user completed successfully!");
 
         die('<script type="text/javascript">window.location.href="' . $url . '"; </script></body></html>');
-    } else if ($choice == 'withdraw') {
+    } else if ($choice == 'withdraw' && checkUserCredentials($mysqli, $user, $pass) == true) {
 
         if($amount < 0){
             exit("Impossible to witdraw a negative amount!");
@@ -162,6 +152,20 @@
         $amount = $row['amount'];  
         
         return $amount;
+    }
+
+    function checkUserCredentials($mysqli, $user, $pass){
+        $stm = $mysqli->prepare("SELECT pass FROM users WHERE user = ?");
+        $stm->bind_param("s", $user);
+        $stm->execute() or die($stm->error());
+        $result = $stm->get_result();
+        $row = $result->fetch_array();
+        if($row['pass'] != $pass){
+            exit("User doesn't exist in the system or the combination user and password used is wrong, retry!");
+            return false;
+        }
+
+        return true;
     }
 
     ?>
