@@ -5,6 +5,8 @@ ATTACK PHASE:
     4) Overflow the type in the database.
     5) Create an account, do a lot of deposit and then request a lot of time the balance.
     6) Check if mass creating users could stop the databse from operating properly.
+    7) Try to DoS the server's resources opening lots of database connections
+    8) Fill the request.log file with lot of junk
 
 DEFENSE PHASE:
     0) Reuse iptables rules created for resilient_cctf. 
