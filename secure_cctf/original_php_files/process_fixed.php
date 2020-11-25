@@ -24,8 +24,11 @@
 
     if(isset($_GET["pass"]))
         $pass = $_GET["pass"];
+        if(strlen($pass) > 32){
+            die("Password is too big </body></html>");
+        }
     else
-        die("No password provided");
+        die("No password provided </body></html>");
         $pass = "";    
 
     if(isset($_GET["drop"]))
@@ -34,6 +37,9 @@
         $choice = ""; 
 
     if(isset($_GET["amount"]))
+        if(strlen($amount) > 11){
+            die("Amount is too big </body></html>");
+        }
         $amount = intval($_GET["amount"]);
     else
         $amount = 0;
