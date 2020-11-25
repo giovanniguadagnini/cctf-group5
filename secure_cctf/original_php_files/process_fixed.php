@@ -11,14 +11,17 @@
     }
     
     $MAX_INT_DB = 2147483647;
+     #Setting user and password to "" allow the attacker to create an user without password, or an empty user, Which I believe count as "inconsistent state"
     if(isset($_GET["user"]))
         $user = htmlentities($_GET["user"]);
     else
+        die("No user provided");
         $user = "";
 
     if(isset($_GET["pass"]))
         $pass = htmlentities($_GET["pass"]);
     else
+        die("No password provided");
         $pass = "";    
 
     if(isset($_GET["drop"]))
