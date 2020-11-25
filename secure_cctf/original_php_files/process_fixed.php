@@ -43,7 +43,7 @@
         if ($stm->execute() == false){
             $mysqli->close();
             fclose($fh);
-            die($stm->error();
+            die($stm->error());
         }
 
         $result = $stm->get_result();
@@ -60,7 +60,7 @@
         if ($stm->execute() == false){
             $mysqli->close();
             fclose($fh);
-            die($stm->error();
+            die($stm->error());
         }
 
         $result = $stm->get_result();
