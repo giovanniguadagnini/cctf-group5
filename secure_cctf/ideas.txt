@@ -28,3 +28,6 @@ DEFENSE PHASE:
 FOR THE DEBUGG:
 error_reporting(E_ALL);
 ini_set('display_errors','On');
+
+To connect to website from our pc:
+ssh -L 8888:<pc_name>:80 otech2<id>@users.deterlab.net -N -f
