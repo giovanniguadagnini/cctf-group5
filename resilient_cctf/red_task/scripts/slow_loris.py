@@ -9,10 +9,10 @@ import time
 #regular_headers = [ "User-agent: Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0",
 #                    "Accept-language: en-US,en,q=0.5"]
 
-wget_headers = ["User-Agent: Wget/1.19.4 (linux-gnu)", "Accept: */*", "Accept-Encoding: identity", "Host: " + str(sys.argv[5]) , "Connection: Keep-Alive"]
-nc_headers = ["User-Agent: nc/0.0.1", "Host: " + str(sys.argv[5]) , "Accept: */*"]
+wget_headers = ["User-Agent: Wget/1.19.4 (linux-gnu)", "Accept: */*", "Accept-Encoding: identity", "Host: 10.1.5.2" , "Connection: Keep-Alive"]
+nc_headers = ["User-Agent: nc/0.0.1", "Host: 10.1.5.2" , "Accept: */*"]
 #curl headers
-regular_headers = ["Host: " + str(sys.argv[5]) , "User-Agent: curl/7.58.0", "Accept: */*"]
+regular_headers = ["Host: 10.1.5.2" , "User-Agent: curl/7.58.0", "Accept: */*"]
 
 def init_socket(ip,port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -28,8 +28,8 @@ def init_socket(ip,port):
     return s
 
 def main():
-    if len(sys.argv)<6:
-        print(("Usage: {} 10.1.5.2 80 100 10 <ip_addrsrc>".format(sys.argv[0])))
+    if len(sys.argv)<5:
+        print(("Usage: {} 10.1.5.2 80 100 10".format(sys.argv[0])))
         return
 
     ip = sys.argv[1]

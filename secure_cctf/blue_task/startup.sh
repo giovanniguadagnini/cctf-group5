@@ -45,6 +45,17 @@ cd secure_cctf/original_php_files/
 chmod +x *.sh
 sudo ./generate_diff.sh process.php process_fixed.php
 sudo ./patch.sh /var/www/html/process.php process.patch
+if ! which tcpflow &> /dev/null
+then
+   sudo apt install tcpflow -y
+fi
+sudo cp /etc/apache2/mods-available/qos.conf /etc/apache2/mods-available/qos.conf.old
+sudo echo '<IfModule qos_module>' > /etc/apache2/mods-available/qos.conf
+sudo echo '    QS_SrvRequestRate   120 ' >> /etc/apache2/mods-available/qos.conf
+sudo echo '    QS_SrvMaxConn       100 ' >> /etc/apache2/mods-available/qos.conf
+sudo echo '    QS_SrvMaxConnClose  200 ' >> /etc/apache2/mods-available/qos.conf
+sudo echo '</IfModule>' >> /etc/apache2/mods-available/qos.conf
+sed -i .old "s/Timeout 300$/Timeout 1/" /etc/apache2/apache2.conf
 EOF
 echo "[server] lampp installed, process.php patched  and iptables configured"
 
