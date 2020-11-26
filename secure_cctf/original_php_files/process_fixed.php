@@ -5,7 +5,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <style>
-        table th { text-align: center;   }
+        table th { text-align: center; }
         .table { margin: auto; width: 50% !important; }
         h1 { text-align: center; }
         h2 { text-align: center; }
@@ -16,7 +16,7 @@
 </head>
 <body>
     <?php
-    //Open the file for the log operations
+    // Open the file for the log operations
     $myFile = "/tmp/request.log";
     $fh = fopen($myFile, 'a');
 
@@ -91,12 +91,14 @@
             $pageno = intval($_GET['pageno']);
             if(gettype($pageno) != "integer"){
                 closeDBandFile("Impossible to use pagination with a non numeric index.");
+            }else if($pageno == 0){
+                $pageno = 1;
             }
         } else {
             $pageno = 1;
         }
+
         $no_of_records_per_page = 5;
-        $offset = ($pageno-1) * $no_of_records_per_page;
 
         // Calculate the number of pages using the number of records
         $stm = $mysqli->prepare("SELECT COUNT(*) as count FROM transfers WHERE user = ?");
@@ -108,8 +110,13 @@
 
         $result = $stm->get_result();
         $row = $result->fetch_array();
-        $total_rows = $row["count"]; 
+        $total_rows = $row['count']; 
         $total_pages = ceil($total_rows / $no_of_records_per_page);
+        
+        if($pageno > $total_pages){
+            $pageno = $total_pages;
+        }
+        $offset = ($pageno-1) * $no_of_records_per_page;
 
         // Limit balance to the last 10 user operations
         $stm2 = $mysqli->prepare("SELECT * FROM transfers WHERE user = ? LIMIT ?,?");
