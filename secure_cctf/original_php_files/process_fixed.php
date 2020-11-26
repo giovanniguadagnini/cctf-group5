@@ -1,10 +1,18 @@
 <html>
 <head>
     <title>Bank - Reserved Area</title>
-    <!-- Bootstrap CDN -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        table th { text-align: center;   }
+        .table { margin: auto; width: 50% !important; }
+        h1 { text-align: center; }
+        h2 { text-align: center; }
+        .menu { text-align: center; }
+        .menu ul { display:inline-table; }
+        .menu li { display:inline; }
+    </style>
 </head>
 <body>
     <?php
@@ -59,7 +67,7 @@
         exit('Could not connect: ' . $mysqli->error());
     }
 
-    $url = "process.php?user=$user&pass=$pass&drop=balance";
+    $url_balance = "process.php?user=$user&pass=$pass&drop=balance";
     
     // Using the parameter $choise to perform the different operations
     if ($choice == 'register') {
@@ -73,7 +81,7 @@
         $result = $stm->get_result();
 
         print "User $user successfully!";
-        closeDBandFile('<script type="text/javascript">window.location.href="' . $url . '"; </script>');
+        closeDBandFile("<a href='$url_balance'>Load balance page</a>");
     } else if ($choice == 'balance' && checkUserCredentials($user, $pass) == true) {
 
         printUserInfo($user);  
@@ -87,7 +95,7 @@
         } else {
             $pageno = 1;
         }
-        $no_of_records_per_page = 25;
+        $no_of_records_per_page = 5;
         $offset = ($pageno-1) * $no_of_records_per_page;
 
         // Calculate the number of pages using the number of records
@@ -114,8 +122,9 @@
         $result2 = $stm2->get_result();
 
         $sum = 0;
-        print "<h1>Balance and transfer history</h1>";
-        print "<table class='table'><thead><tr><th>Action</th><th>Amount</th></tr></thead><tbody>";
+        print "<h2>Balance and transfer history</h2>";
+        print "<div class='container-fluid'>";
+        print "<table class='table table-bordered table-striped text-center'><thead><tr><th>Action</th><th>Amount</th></tr></thead><tbody>";
         while ($row = $result2->fetch_array()) {
             $amount = $row['amount'];
             if ($amount < 0) {
@@ -126,26 +135,24 @@
             print "<tr><td>" . $action . "</td><td>" . $amount . "</td></tr>";
         }
         print "</tbody></table>";
+        print "</div>";
 
         $prev_page = $pageno - 1;
-        if($prev_page < 1){
-            $prev_page = 1;
-        }
         $next_page = $pageno + 1;
-        print "<ul class='pagination'>";
-        print "<li><a href='$url&pageno=1'>First</a></li>";
+        print "<div class='menu'><ul class='pagination'>";
+        print "<li><a href='$url_balance&pageno=1'>First</a></li>";
         if($prev_page >= 1){
-            print "<li><a href='$url&pageno=$prev_page'>Prev</a></li>";
+            print "<li><a href='$url_balance&pageno=$prev_page'>Prev</a></li>";
         }
-        if($next_page <= $total_pages){
-            print "<li><a href='$url&pageno=$next_page'>Next</a></li>";
+        if($next_page < $total_pages){
+            print "<li><a href='$url_balance&pageno=$next_page'>Next</a></li>";
         }
-        print "<li><a href='$url&pageno=$total_pages'>Last</a></li>";
-        print "</ul>"; 
+        print "<li><a href='$url_balance&pageno=$total_pages'>Last</a></li>";
+        print "</ul></div><br/>"; 
 
-        print "<b>User balance: " . getUserBalance($user) . "</b><br />";
+        print "<h2>User balance: " . getUserBalance($user) . "</h2><br />";
 
-        print "Back to <a href='index.php'>home</a>";
+        print "Back to <a href='index.php'>home</a><br />";
     } else if ($choice == 'deposit' && checkUserCredentials($user, $pass) == true) {
 
         printUserInfo($user);
@@ -168,8 +175,8 @@
         
         $result = $stm->get_result();
 
-        print("Deposit of $amount for user $user completed successfully!");
-        closeDBandFile('<script type="text/javascript">window.location.href="' . $url . '"; </script>');
+        print("Deposit of $amount for user $user completed successfully!<br />");
+        closeDBandFile("<a href='$url_balance'>Load balance page</a>");
     } else if ($choice == 'withdraw' && checkUserCredentials($user, $pass) == true) {
 
         printUserInfo($user);
@@ -205,12 +212,12 @@
         
         $result = $stm->get_result();
 
-        print("Withdraw of $amount for user $user completed successfully!");
-        closeDBandFile('<script type="text/javascript">window.location.href="' . $url . '"; </script>');
+        print("Withdraw of $amount for user $user completed successfully!<br />");
+        closeDBandFile("<a href='$url_balance'>Load balance page</a>");
     } else {
         printUserInfo($user);
-        print "The specified operation is not allowed!";
-        closeDBandFile('<script type="text/javascript">window.location.href="' . $url . '"; </script>');
+        print "The specified operation is not allowed!<br />";
+        print "Back to <a href='index.php'>home</a><br />";
     }
 
     // Log data for scoring

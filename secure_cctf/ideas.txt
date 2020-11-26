@@ -6,7 +6,8 @@ ATTACK PHASE:
     5) Create an account, do a lot of deposit and then request a lot of time the balance.
     6) Check if mass creating users could stop the databse from operating properly.
     7) Try to DoS the server's resources opening lots of database connections
-    8) Fill the request.log file with lot of junk
+    8) Fill the request.log file with lot of junk.
+    9) Prepare list of payload to test.
 
 DEFENSE PHASE:
     0) Reuse iptables rules created for resilient_cctf. 
@@ -17,13 +18,14 @@ DEFENSE PHASE:
     5) Check username password when the user is already present in the system.
     6) Use prepared statement to avoid sql injection.
     7) Sanitize data retrieved from the db before print them on the page (?).
-    8) Check the value to be added is an integer (not binary or hex)
-    9) Hash the password (be sure digest is smaller than len of the db field)
+    8) Check the value to be added is an integer (not binary or hex).
+    9) Hash the password (be sure digest is smaller than len of the db field).
     10) Rewrite balance function to avoid slowdowns when computing the balance for the check before witdraw or deposit operation.
-    11) Ask if it's ok to modify the balance function (it's too slow)
-    12) Modified php script to return only the last 10 transfer.
+    11) Ask if it's ok to modify the balance function (it's too slow).
+    12) Modified php script to use paginated version of the list of the transactions.
     13) No need to check that total balance is bigger than max_int since sql is casting the sum to the appropriate variable.
     14) Check size of all the types before adding to the db.
+    15) Add slow loris protection.
 
 FOR THE DEBUGG:
 error_reporting(E_ALL);
