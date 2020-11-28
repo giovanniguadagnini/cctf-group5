@@ -27,7 +27,7 @@ do
         JUNK=$( echo $SEED | cut -c$START-$END )
     fi
 
-    curl -sS "10.1.5.2/process.php?user=$USER&pass=$PASS&drop=deposit&amount=$AMOUNT&$JUNK_FIELD_NAME=$JUNK" &
+    curl -sS "10.1.5.2/process.php?user=$USER&pass=$PASS&drop=deposit&amount=$AMOUNT&$JUNK_FIELD_NAME=$JUNK" >/dev/null &
 
-    changeValues=$(( (changeValues + 1) % 50 ))
+    changeValues=$(( (changeValues + 1) % 100 ))
 done

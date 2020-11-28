@@ -18,7 +18,7 @@ ssh $CLIENT$c$PROJECT 1> /dev/null 2>errors/startup_client.txt <<EOF
 sudo bash
 mkdir /home/cctf
 chmod 777 /home/cctf
-cp -r resilient_cctf/red_task/scripts /home/cctf
+cp -r secure_cctf/red_task/scripts /home/cctf
 exit
 EOF
 
