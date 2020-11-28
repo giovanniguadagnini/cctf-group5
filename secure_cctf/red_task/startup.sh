@@ -19,6 +19,7 @@ sudo bash
 mkdir /home/cctf
 chmod 777 /home/cctf
 cp -r secure_cctf/red_task/scripts /home/cctf
+sudo apt-get install sqlmap -y
 exit
 EOF
 
