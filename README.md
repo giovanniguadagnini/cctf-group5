@@ -15,8 +15,7 @@ As red team: the scripts will be used in order to try to make unreachable the se
 
 #### Defense phase
 1) Launch statistics script.
-2) In case change snort rules and restart it with **sudo pkill snort; sudo snort --daq nfq -Q -c /home/cctf/snort/snort.conf -l /home/cctf/snort/alerts -D**  
-3) Evaluate the traffic and setup a rule to block eventual SYN with a specific form **sudo iptables -I FORWARD 1 --match string --algo bm|kmp --from 30 --to 34 --hex-string '|ff ff|' -p tcp --dport 80 --syn --j DROP** (check for window = 65535), **sudo iptables -I FORWARD 1 --match string --algo bm --to 10 ! --hex-string '|4000|' -p  tcp --dport 80 --syn --j DROP** (check for DF bit not setted typical of flooder), **sudo iptables -I FORWARD 1 -m length --length 60 -p tcp --dport 80 --syn --j DROP**
+2) Evaluate the traffic and setup a rule to block eventual SYN with a specific form **sudo iptables -I FORWARD 1 --match string --algo bm|kmp --from 30 --to 34 --hex-string '|ff ff|' -p tcp --dport 80 --syn --j DROP** (check for window = 65535), **sudo iptables -I FORWARD 1 --match string --algo bm --to 10 ! --hex-string '|4000|' -p  tcp --dport 80 --syn --j DROP** (check for DF bit not setted typical of flooder), **sudo iptables -I FORWARD 1 -m length --length 60 -p tcp --dport 80 --syn --j DROP**
 
 #### Attack phase
 1) Start **genuine_client.sh** (default timer = 10 second to give less point to defenders).  
@@ -40,5 +39,8 @@ As red team: the script will be used to attack a small php web application.
 7) You'll find everything in /home/cctf folder.  
 
 #### Defense phase
+1) Evaluate the traffic reaching the server with the traffic analysis script and also execute check_consistency_db.sh to immmediately know if there are problems.  
 
 #### Attack phase
+0) Start genuine_requests.sh (Pay attention to the number of requests, may give to the adversay a lot of points).  
+1) Run sqlmap_check.sh to know if the adversaty webserver has injection problems.  

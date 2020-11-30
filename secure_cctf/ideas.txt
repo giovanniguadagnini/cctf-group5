@@ -27,9 +27,13 @@ DEFENSE PHASE:
     14) Check size of all the types before adding to the db.
     15) Add slow loris protection.
 
-FOR THE DEBUGG:
+FOR THE DEBUG:
 error_reporting(E_ALL);
 ini_set('display_errors','On');
 
-To connect to website from our pc:
+To connect to webserver from our pc:
 ssh -L 8888:<pc_name>:80 otech2<id>@users.deterlab.net -N -f
+
+To connect to the adversary webserver from the client
+ssh -J otech2<id>@users.deterlab.net -D 127.0.0.1:5000 otech2<id>@client1.<project_name>.OffTech
+chromium --proxy-server=socks://localhost:5000
