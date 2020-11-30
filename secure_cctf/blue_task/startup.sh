@@ -38,7 +38,9 @@ sudo apt-get install lamp-server^ -y
 sudo apt-get install apache2-utils libapache2-mod-qos -y
 sudo cp /proj/OffTech/cctf_secureserver/*.php /var/www/html
 sudo rm /var/www/html/index.html
-sudo cat /proj/OffTech/cctf_secureserver/httpd.conf >> /etc/apache2/httpd.conf
+sudo bash
+cat /proj/OffTech/cctf_secureserver/httpd.conf >> /etc/apache2/httpd.conf
+exit
 sudo /etc/init.d/apache2 restart
 sudo mysql -u"root" -p"rootmysql" < /proj/OffTech/cctf_secureserver/setup.sql
 sudo mysql -u"root" -p"rootmysql" < secure_cctf/blue_task/add_user.sql
