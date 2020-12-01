@@ -10,7 +10,9 @@ curl_header = {
     "Cache-Control": "no-cache"
 }
 
-payloads = ["", "!)()&//(&/(/(/)))", "1.2", "1,2" "-2147483647", "0.44e10", "-0.44e10", "0.44b2", "-0.44b2", "1&asd()", "abcdefghil", "11aa", "123a321", "now()", "~2147483647", "NEGATIVE(2147483647)", "9223372036854775807", "9223372036854775808", "-9223372036854775807", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "!£$%$&/()/$", "&&&&&&&&&&&&&&&&"]
+payloads = ["", "!)()&//(&/(/(/)))", "1.2", "1,2" "-2147483647", "0.44e10", "-0.44e10", "0.44b2", "-0.44b2", "1&asd()", "abcdefghil", "11aa", "123a321", "now()", "~2147483647", "SIGN(2147483647)", "9223372036854775807", "9223372036854775808", "-9223372036854775807", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "!£$%$&/()/$", "&&&&&&&&&&&&&&&&"]
+
+errors = []
 
 user = "JJJJJJJJ"
 password = "YYYYYYYYYY"
@@ -35,6 +37,7 @@ def sendRequest(fieldToAttack, payload, action):
 
     if(r.status_code != 200):
         print("The request ({}) generated an error in the webserver.\n".format(payload))
+        errors.append("field: {}, payload: {}, action {}, status {}".format(fieldToAttack, payload, action, r.status_code))
 
     print("Response ({}):\n{}".format(r.status_code, r.text))
     print("---------------------------------------")
@@ -63,6 +66,10 @@ def main():
     for payload in payloads:
         sendRequest("user", payload, "register")
         sendRequest("password", payload, "register")
+
+    if(len(errors) > 0):
+        for e in errors:
+            print(e)
 
 if __name__ == "__main__":
     main()
