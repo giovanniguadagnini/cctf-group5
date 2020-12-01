@@ -101,7 +101,11 @@
             $stm->bind_param("ss", $user, password_hash($pass, PASSWORD_DEFAULT)); // The password is stored in the database as the digest generated from the php function
 
             if ($stm->execute() == false){
-                closeDBandFile($stm->error); // In case of error print the error and close the connection with files and mysql 
+                if(strpos($stm->error, "Duplicate entry") !== false){ // Checks if the error says the user is duplicate to let the client know
+                    closeDBandFile("User $user already registerd in the system!");
+                }else{
+                    closeDBandFile($stm->error); // In case of error print the error and close the connection with files and mysql 
+                }
             }
 
             //$result = $stm->get_result(); //Uncomment and use if needed
