@@ -35,7 +35,7 @@ then
 echo "Start http server test"
 for ((i=0; i<$REQUESTS; i++))
 do
-curl -w "time_total: %{time_total}s\n" -o /dev/null -s $SERVER/1.html 
+curl -w "time_total: %{time_total}s\n" -o /dev/null -s $SERVER/index.php 
 done
 fi
 

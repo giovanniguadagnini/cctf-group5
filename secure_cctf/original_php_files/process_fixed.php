@@ -188,14 +188,14 @@
             // Retrive the user balance and show it in the page
             print "<h2>User balance: " . getUserBalance($user) . "</h2><br />";
 
-            print "Back to <a href='index.php'>home</a><br />";
+            print "Back to <a href='index.php'>home</a>";
         } else if ($choice == 'deposit' && checkUserCredentials($user, $pass) == true) {
 
             printUserInfo($user);
             
             // Check if the amount inserted from the user is positive, smaller than the maximum int in the db and if it's really and integer 
-            if($amount < 0){
-                closeDBandFile("Impossible to deposit a negative amount!");
+            if($amount <= 0){
+                closeDBandFile("Impossible to deposit a negative or equal to 0 amount!");
             }else if($amount > $MAX_INT_DB){
                 closeDBandFile("Impossible to deposit this amount (too big for the type used)!");
             }else if(gettype($amount) != "integer"){
@@ -219,8 +219,8 @@
             printUserInfo($user);
 
             // Check if the amount inserted from the user is positive, smaller than the maximum int in the db and if it's really and integer
-            if($amount < 0){
-                closeDBandFile("Impossible to witdraw a negative amount!");
+            if($amount <= 0){
+                closeDBandFile("Impossible to witdraw a negative or equal to 0 amount!");
             }else if($amount > $MAX_INT_DB){
                 closeDBandFile("Impossible to witdraw this amount (too big for the type used)!");
             }else if(gettype($amount) != "integer"){
@@ -295,7 +295,8 @@
             $GLOBALS['mysqli']->close();
             fclose($GLOBALS['fh']);
             fclose($GLOBALS['fh_myLog']);
-            exit($message . " </body><html>");
+            print "$message<br />";
+            exit("Back to <a href='index.php'>home</a><br />" . " </body><html>");
         }
         
         /*
@@ -314,6 +315,11 @@
             $result = $stm->get_result(); // Retrieve the information from the database
             $row = $result->fetch_array();
             $amount = $row['amount'];  
+
+            // If the result set is empty than set the amount to 0
+            if(!$amount){
+                $amount = 0;
+            }
             
             return $amount;
         }

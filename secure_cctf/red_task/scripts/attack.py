@@ -19,7 +19,7 @@ user = "JJJJJJJJ"
 password = "YYYYYYYYYY"
 
 def registerUser():
-    request_url = "http://10.1.5.2/process.php?user={}&pass={}&drop=".format(user, password, "register")
+    request_url = "http://10.1.5.2/process.php?user={}&pass={}&drop={}".format(user, password, "register")
     r = requests.get(request_url, headers=curl_header)
 
     print("User registered ({}):\n{}".format(r.status_code, r.text))
@@ -35,10 +35,11 @@ def sendRequest(fieldToAttack, payload, action):
         request_url = "http://10.1.5.2/process.php?user={}&pass={}&drop={}&amount={}".format(user, password, action, payload)
     
     r = requests.get(request_url, headers=curl_header)
-
+    print("URL: {}".format(request_url))
+    
     if(r.status_code != 200):
         print("The request ({}) generated an error in the webserver.\n".format(payload))
-        errors.append("field: {}, payload: {}, action {}, status {}".format(fieldToAttack, payload, action, r.status_code))
+        errors.append("url: {}, payload: {}, status {}".format(request_url, payload, r.status_code))
 
     print("Response ({}):\n{}".format(r.status_code, r.text))
     print("---------------------------------------")
@@ -48,29 +49,46 @@ def main():
     registerUser()
     for payload in payloads:
         sendRequest("amount", payload, "deposit")
+        input('Press a key to continue...')
         sendRequest("amount", payload, "withdraw")
+        input('Press a key to continue...')
         sendRequest("amount", payload, "balance")
+        input('Press a key to continue...')
         sendRequest("amount", payload, "register")
+        input('Press a key to continue...')
     
     for payload in payloads:
         sendRequest("drop", payload, "deposit")
+        input('Press a key to continue...')
         sendRequest("drop", payload, "withdraw")
+        input('Press a key to continue...')
         sendRequest("drop", payload, "balance")
+        input('Press a key to continue...')
         sendRequest("drop", payload, "register")
+        input('Press a key to continue...')
 
     for payload in payloads:
         sendRequest("user", payload, "deposit")
+        input('Press a key to continue...')
         sendRequest("user", payload, "withdraw")
+        input('Press a key to continue...')
         sendRequest("user", payload, "balance")
+        input('Press a key to continue...')
         sendRequest("user", payload, "register")
+        input('Press a key to continue...')
 
     for payload in payloads:
         sendRequest("user", payload, "register")
+        input('Press a key to continue...')
         sendRequest("password", payload, "register")
+        input('Press a key to continue...')
 
     if(len(errors) > 0):
+        print("------------------ERRORS--------------------")
         for e in errors:
             print(e)
+    else:
+        print("No page status error detected using the payloads.")
 
 if __name__ == "__main__":
     main()
