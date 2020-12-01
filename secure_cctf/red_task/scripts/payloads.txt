@@ -53,3 +53,17 @@ curl -sS "$url?user='union%20select%201,2,user%20from%20users;--%20&drop=balance
 
 UNEXPECTED 'DROP' VALUE
 curl -sS "10.1.5.2/process.php?user=john&pass=abcdef&drop=123b"
+
+USE ILLEGAL UNICODE POSITIONS:
+#registeran account using special unicode positions that might result in unexpected EOF or the likes
+curl -sS "10.1.5.2/process.php?user=%EF%BF%BE&pass=%EF%BF%BE&drop=register" & sleep 1
+
+curl -sS "10.1.5.2/process.php?user=%EF%BF%BF&pass=%EF%BF%BF&drop=register" & sleep 1
+
+curl -sS "10.1.5.2/process.php?user=%ED%A0%80&pass=%ED%A0%80&drop=register" & sleep 1
+
+curl -sS "10.1.5.2/process.php?user=%EF%B7%AF&pass=%EF%B7%AF&drop=register" & sleep 1
+
+curl -sS "10.1.5.2/process.php?user=%F0%BF%BF%BF&pass=%F0%BF%BF%BF&drop=register" & sleep 1
+
+curl -sS "10.1.5.2/process.php?user=%ED%AD%BF%ED%B0%80&pass=%ED%AD%BF%ED%B0%80&drop=register"
