@@ -6,8 +6,8 @@ echo "Check db consistency is running ..."
 COUNT=1
 while true
 do
-    echo "SELECT user, SUM(amount) AS balance FROM ctf2.transfers GROUP BY (user) HAVING balance < 0;" | mysql -u"root" -p"rootmysql" 1>$FILENAME1 2> /dev/null
-    echo "SELECT user FROM ctf2.transfers WHERE user NOT IN (SELECT user FROM ctf2.users) GROUP BY user;" | mysql -u"root" -p"rootmysql" 1>$FILENAME2 2> /dev/null
+    echo "SELECT user, SUM(amount) AS balance FROM ctf2.transfers GROUP BY (user) HAVING balance < 0;" | mysql -u"root" -p"@ThisIsASecurePassword|" 1>$FILENAME1 2> /dev/null
+    echo "SELECT user FROM ctf2.transfers WHERE user NOT IN (SELECT user FROM ctf2.users) GROUP BY user;" | mysql -u"root" -p"@ThisIsASecurePassword|" 1>$FILENAME2 2> /dev/null
     if [ -s $FILENAME1 ]
     then
         echo "ATTENTION! Detected user/s with negative balance! ($COUNT)"

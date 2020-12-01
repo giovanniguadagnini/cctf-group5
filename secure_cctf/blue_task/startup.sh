@@ -32,8 +32,8 @@ sudo iptables -P INPUT DROP
 sudo iptables -P OUTPUT DROP
 sudo iptables -P FORWARD DROP
 sudo apt-get update 
-debconf-set-selections <<< 'mysql-server-5.7 mysql-server/root_password password rootmysql'
-debconf-set-selections <<< 'mysql-server-5.7 mysql-server/root_password_again password rootmysql'
+debconf-set-selections <<< 'mysql-server-5.7 mysql-server/root_password password @ThisIsASecurePassword|'
+debconf-set-selections <<< 'mysql-server-5.7 mysql-server/root_password_again password @ThisIsASecurePassword|'
 sudo apt-get install lamp-server^ -y
 sudo apt-get install apache2-utils libapache2-mod-qos -y
 sudo cp /proj/OffTech/cctf_secureserver/*.php /var/www/html
@@ -42,8 +42,8 @@ sudo bash
 cat /proj/OffTech/cctf_secureserver/httpd.conf >> /etc/apache2/httpd.conf
 exit
 sudo /etc/init.d/apache2 restart
-sudo mysql -u"root" -p"rootmysql" < /proj/OffTech/cctf_secureserver/setup.sql
-sudo mysql -u"root" -p"rootmysql" < secure_cctf/blue_task/add_user.sql
+sudo mysql -u"root" -p"@ThisIsASecurePassword|" < /proj/OffTech/cctf_secureserver/setup.sql
+sudo mysql -u"root" -p"@ThisIsASecurePassword|" < secure_cctf/blue_task/add_user.sql
 cd secure_cctf/original_php_files/
 chmod +x *.sh
 sudo mv /var/www/html/process.php /var/www/html/process.php.old

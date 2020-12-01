@@ -18,4 +18,7 @@ To complete the evaluation I run some tests with wfuzz:
 
     wfuzz -c -w /home/giovanni/Scaricati/wfuzz/wordlist/vulns/sql_inj.txt "http://localhost:8080/process.php?user=FUZZ&pass=ciaociaociao&drop=register"
 
-NO problem detected
+    2.4) Test with different encoding
+    wfuzz -z file,<wordlist>,<encoder> "http://..."
+
+No problem detected
