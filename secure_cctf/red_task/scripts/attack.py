@@ -2,6 +2,7 @@
 
 import os
 import requests
+from time import sleep
 
 curl_header = {
     "Host" : "10.1.5.2",
@@ -22,7 +23,8 @@ def registerUser():
     request_url = "http://10.1.5.2/process.php?user={}&pass={}&drop={}".format(user, password, "register")
     r = requests.get(request_url, headers=curl_header)
 
-    print("User registered ({}):\n{}".format(r.status_code, r.text))
+    print("User should be registered ({}):\n{}".format(r.status_code, r.text))
+    print("---------------------------------------")
 
 def sendRequest(fieldToAttack, payload, action):
     if(fieldToAttack == "user"):
@@ -44,44 +46,48 @@ def sendRequest(fieldToAttack, payload, action):
     print("Response ({}):\n{}".format(r.status_code, r.text))
     print("---------------------------------------")
 
+def waitForUserInput():
+    sleep(1) 
+    input('Press a key to continue...')
 
 def main():
     registerUser()
+    waitForUserInput()
     for payload in payloads:
         sendRequest("amount", payload, "deposit")
-        input('Press a key to continue...')
+        waitForUserInput()
         sendRequest("amount", payload, "withdraw")
-        input('Press a key to continue...')
+        waitForUserInput()
         sendRequest("amount", payload, "balance")
-        input('Press a key to continue...')
+        waitForUserInput()
         sendRequest("amount", payload, "register")
-        input('Press a key to continue...')
+        waitForUserInput()
     
     for payload in payloads:
         sendRequest("drop", payload, "deposit")
-        input('Press a key to continue...')
+        waitForUserInput()
         sendRequest("drop", payload, "withdraw")
-        input('Press a key to continue...')
+        waitForUserInput()
         sendRequest("drop", payload, "balance")
-        input('Press a key to continue...')
+        waitForUserInput()
         sendRequest("drop", payload, "register")
-        input('Press a key to continue...')
+        waitForUserInput()
 
     for payload in payloads:
         sendRequest("user", payload, "deposit")
-        input('Press a key to continue...')
+        waitForUserInput()
         sendRequest("user", payload, "withdraw")
-        input('Press a key to continue...')
+        waitForUserInput()
         sendRequest("user", payload, "balance")
-        input('Press a key to continue...')
+        waitForUserInput()
         sendRequest("user", payload, "register")
-        input('Press a key to continue...')
+        waitForUserInput()
 
     for payload in payloads:
         sendRequest("user", payload, "register")
-        input('Press a key to continue...')
+        waitForUserInput()
         sendRequest("password", payload, "register")
-        input('Press a key to continue...')
+        waitForUserInput()
 
     if(len(errors) > 0):
         print("------------------ERRORS--------------------")
