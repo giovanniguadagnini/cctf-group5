@@ -1,5 +1,5 @@
 DROP USER 'root'@'localhost';
-CREATE USER 'root'@'localhost' IDENTIFIED BY 'rootmysql';
+CREATE USER 'root'@'localhost' IDENTIFIED BY '@ThisIsASecurePassword|';
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 CREATE USER 'php_user'@'localhost' IDENTIFIED BY '|AttackersWontFindOut@';

@@ -42,7 +42,7 @@
         // Input validation, checkss if the user setted all the variables
         if(isset($_GET["user"])){
             $user = htmlentities($_GET["user"]); // Avoid problems with special characters in the username (in the specific xss reflected)
-            if(strlen($user) > 20){ //Check if the username can be stored in the database
+            if(strlen($user) > 40){ //Check if the username can be stored in the database
                 fclose($fh);
                 fclose($fh_myLog);
                 exit("Username is too big. </body></html>");
