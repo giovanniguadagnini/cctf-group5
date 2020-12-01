@@ -4,10 +4,11 @@ import os
 import requests
 
 curl_header = {
-    "Host" : "10.1.2.5",
+    "Host" : "10.1.5.2",
     "User-Agent" : "curl.7.72.0",
     "Connection": "Keep-Alive",
-    "Cache-Control": "no-cache"
+    "Cache-Control": "no-cache",
+    "Accept": "*/*"
 }
 
 payloads = ["", "!)()&//(&/(/(/)))", "1.2", "1,2" "-2147483647", "0.44e10", "-0.44e10", "0.44b2", "-0.44b2", "1&asd()", "abcdefghil", "11aa", "123a321", "now()", "~2147483647", "SIGN(2147483647)", "9223372036854775807", "9223372036854775808", "-9223372036854775807", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "!£$%$&/()/$", "&&&&&&&&&&&&&&&&"]
