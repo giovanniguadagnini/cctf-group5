@@ -1,7 +1,7 @@
 #!/bin/bash
 
-USER="gianni"
-PASS="pinotto"
+USER="marco"
+PASS="polo"
 
 curl -sS "10.1.5.2/process.php?user=$USER&pass=$PASS&drop=register"
 
