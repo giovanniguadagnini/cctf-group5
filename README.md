@@ -40,11 +40,12 @@ As red team: the script will be used to attack a small php web application.
 
 #### Defense phase
 1) Evaluate the traffic reaching the server with the traffic analysis script and also execute check_consistency_db.sh to immmediately know if there are problems.  
-2) Start the scripts to evaluate the traffic (run_traffic_monitor.sh, packet_inspection.sh, monitor_server.sh) to evaluate the situation.  
-3) In case they are using slow_loris check the rules used for resilient_cctf and try to block the packets (in any case mod_qos should fix this problem).  
+2) Start the scripts to evaluate the traffic (**run_traffic_monitor.sh**, **packet_inspection.sh**, **monitor_server.sh**) to evaluate the situation.  
+3) In case they are using slow_loris check the rules used for resilient_cctf and try to block the packets (in any case mod_qos should fix this problem) (Evaluate if use **sudo sed -i.old "s/Timeout 300$/Timeout 10/" /etc/apache2/apache2.conf**).  
 
 #### Attack phase
-1) Run sqlmap_check.sh to know if the adversary webserver has injection problems.  
-2) Run attack.py and evaluate the output messages of the page, the script will automatically test some strange payloads and provide the output.  
-3) Evaluate if the balance page grows a lot with a lot of transfers in that case, start basic_attack.sh (1 option to fill the table).  
-4) Start genuine_requests.sh (Pay attention to the number of requests, may give to the adversay a lot of points). **ATTENTION** user and password of basic_attack.sh and genuine_requests.sh are the same.    
+1) Run **sqlmap_check.sh** to know if the adversary webserver has injection problems.  
+2) Run **attack.py** and evaluate the output messages of the page, the script will automatically test some strange payloads and provide the output.  
+3) Evaluate if the balance page grows a lot with a lot of transfers in that case, start **basic_attack.sh** (1 option to fill the table).  
+4) Open the connection with the server through the client and visit the page using **connect_to_client.sh**.  
+5) Start **genuine_requests.sh** (Pay attention to the number of requests, may give to the adversay a lot of points). **ATTENTION** user and password of basic_attack.sh and genuine_requests.sh are the same.  

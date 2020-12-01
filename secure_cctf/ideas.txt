@@ -37,3 +37,13 @@ ssh -L 8888:<pc_name>:80 otech2<id>@users.deterlab.net -N -f
 To connect to the adversary webserver from the client
 ssh -J otech2<id>@users.deterlab.net -D 127.0.0.1:5000 otech2<id>@client1.<project_name>.OffTech
 chromium --proxy-server=socks://localhost:5000
+
+Check foreign key:
+SELECT i.TABLE_NAME, i.CONSTRAINT_TYPE, i.CONSTRAINT_NAME, k.REFERENCED_TABLE_NAME, k.REFERENCED_COLUMN_NAME 
+FROM information_schema.TABLE_CONSTRAINTS i 
+LEFT JOIN information_schema.KEY_COLUMN_USAGE k ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME 
+WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY' 
+AND i.TABLE_SCHEMA = DATABASE();
+
+Check engine of table:
+SHOW TABLE STATUS WHERE Name = "transfers|users";

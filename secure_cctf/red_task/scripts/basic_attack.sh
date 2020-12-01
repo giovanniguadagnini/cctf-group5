@@ -41,6 +41,7 @@ while true
 do
     curl -w "time_total: %{time_total}s\n" -o /dev/null -sS "10.1.5.2/process.php?user=$USER&pass=$PASS&drop=balance" & 
     COUNT=$((COUNT+1))
+    sleep 1
     echo "$COUNT operation balance requested"
     if [ $COUNT -eq $MAX_REQUEST ];
     then
