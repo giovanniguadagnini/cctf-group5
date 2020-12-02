@@ -30,9 +30,12 @@ This report concern the two cctf laboratories:
 	\item \textbf{Secure CCTF}: During this ctf the main purposes were both to attack and defend a small php webapp.
 \end{itemize}
 
+It's possible to find all the scripts and file used for this exercise in this \href{https://github.com/giovanniguadagnini/cctf-group5}{repository}.
+
 \section{Resilient Server}
 As already introduced in the Overview section this cctf was targeted to both offend and defend an HTTP server. Each group during the experience have access to two Deterlab experiments, in the first experiment the group will act as defenders (Blue Team) and in the second as attackers (Red Team).
 
+\label{sec:TopologyExaplanation}
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=8cm,height=6cm]{ResilientServerTopology}
@@ -220,7 +223,196 @@ they could help narrow down which portion of the package to look for the pattern
 
 \subsection{Piva}
 
+\section{Secure Server}
+During this second ctf the objectives were to defend and attack a small web application. The modality of the exercise are the same used during the first ctf and the topology is the same, the only difference is in the fact that within this competition syn flood attacks are not allowed.
+\\
+As already stated topology and machines involved are the same as in the Resilient ctf to refresh the concepts take a look to the overview of the \hyperref[sec:TopologyExaplanation]{Resilient Server}. 
+\\
+\\
+During this ctf, the point were earned as red team when sending malicious request the red team was able to create inconsistency in the defender database, on the contrary the blue team earned points if they managed to deny the creation of incosistencies in the database. 
 
+\subsection{Dupre}
 
+\subsection{Guadagnini}
+
+\subsubsection{Strategy}
+As happened for the resilient ctf a strategy has been created as result of the analysis of the used...
+
+\subsubsection{Defense phase}
+This time the work started by applying the patch needed to secure the php script:
+\begin{itemize}
+	\item \textbf{SQL injection}: The first problem fixed was relative to sql injection, in the specific the application wasn't performing any type of checks on the data before executing the query, this is really unsecure since an attacker could exploit this security problem to run whatever command he wants to run in our database and this can bring problem like data leaks and incosistencies. So in order to fix this problem prepared statement has been implemented in all the query that used parameter, as for the next small example script:
+	\begin{Verbatim}[tabsize=4]
+	$stm = $mysqli->prepare("INSERT INTO transfers (user,amount) values (?, ?)");
+	$stm->bind_param("si", $user, $amount);
+	if ($stm->execute() == false){
+		closeDBandFile($stm->error); // In case of error print the error 
+			//and close the connection with files and mysql 
+	}
+	\end{Verbatim}
+	Applying prepare statements the webapp is secure against this kind of attack.
+	
+	\item \textbf{Possible XSS}: Also it was almost immediately noticed the possibility to create problems to the user exploiting the fact that on 'user' and 'pass' field of the request no checks were performed, so it was really simple to use them to execute XSS injections. This problem was fixed using \textbf{htmlentites} function of php that in escape all the characters and make impossible for an attacker to exploit this issue.
+	
+	\item \textbf{Credential checks and security}: The original implementation of the process.php script wasn't checking the user credentials before executing the operations, so it was possible for an attacker to perform operations also for users that weren't present in the system. To fix this problem an authentication function has been added and used to protect the execution of maliciou requests.
+	\begin{Verbatim}
+	if ($choice == 'register') {
+		...
+	} else if ($choice == 'balance' && checkUserCredentials($user, $pass) == true) {
+		...
+	} else if ($choice == 'deposit' && checkUserCredentials($user, $pass) == true) {
+		...
+	} else if ($choice == 'withdraw' && checkUserCredentials($user, $pass) == true) {
+		... 
+	} 
+	\end{Verbatim}
+	So after the fix was possible to perform balance, deposit and withdraw, that implicitly consider that the user is present in the system, only if the user credentials provided has been verified.
+	\\
+	The second problem with the password was that in the database the password were stored in clear so possible data leak could be very dangerous for the registered users also no checks on the minumum password lenght were enforced. To fix this problem the code has beed updated to user \textbf{password\_hash} and \textbf{password\_verify} php functions and a simple check on the paramter has been added to check that the password was at least 10 characters long, in this way the user need to insert a password that is at least 10 characters long and the password are stored in the database hashed to reduce the risks. A function that checks if the password is secure could also been interesting to add to the script to enhance the security level of the password. 
+	\begin{Verbatim}[tabsize=4]
+	...
+	//user registration
+	$stm = $mysqli->prepare("INSERT INTO users (user, pass) VALUES (?, ?)");
+	$stm->bind_param("ss", $user, password_hash($pass, PASSWORD_DEFAULT)); // The password is stored 
+		//in the database as the digest generated from the php function
+	...
+	/*
+	* Check the user credential, in the specific retrieve the digest of the password and checks
+	* it with password_verify function
+	* $user Username of the user we need to check the credentials
+	* $pass Password inserted
+	* return outcome of the password digest check
+	*/
+	function checkUserCredentials($user, $pass){
+		$stm = $GLOBALS['mysqli']->prepare("SELECT pass FROM users WHERE user = ?");
+		$stm->bind_param("s", $user);
+		
+		if ($stm->execute() == false){
+			closeDBandFile($stm->error); // In case of error print the error 
+				//and close the connection with files and mysql 
+		}
+		
+		$result = $stm->get_result();
+		$row = $result->fetch_array();
+		if(!password_verify($pass, $row['pass'])){ // Password is check using 
+			//the digest verification funciton of php
+			closeDBandFile("User doesn't exist in the system or the combination "+
+				"user and password used is wrong, retry!");
+			return false;
+		}
+		
+		return true;
+	}	
+	\end{Verbatim}
+	Finally for the user present in the system the password has been randomly generated and updated in the database accordingly to the new specifics.
+	
+	\item \textbf{Parameters check}: As already stated all the parmeter in the original version of the script were using without perform any check at all. To fix this problem some checks has been implemented especially in two point of the code:
+	\begin{enumerate}
+		\item At the beginning of the code some checks has been implemented to ensure the user inserted all the parameters in the request and also it was checked that the username could be stored in the user field of the database. In case the parameter that is missing is really important, like for example username or password, the execution is blocked and a message is sent to the user.
+		
+		\item The second part of this checks was related to the amount parameter, in the specific the script is checking the number inserted is an integer with the \textbf{intval} php function, that converts string to integers, and also checks if it's within the limit of the database integer type. All this checks and cast operations are applied to ensure there are no problem on the execution of the query and also to provide precise error messages to the users.
+	\end{enumerate}
+
+	\item \textbf{Problem on withdraw operation}: In the original script it was possible to create incosistencies in the database since it wasn't performing checks on the amount of money during the withdraw operations. This problem was fixed by getting from the database the amount of money of a user and by checking if the user could withdraw the amount of money inserted.
+	\begin{Verbatim}[tabsize=4]
+	/*
+	* Get the user balance from the database
+	* $user Username of the user we need to recover the balance
+	* return balance of the user
+	*/
+	function getUserBalance($user){
+		$stm = $GLOBALS['mysqli']->prepare("SELECT SUM(amount) 
+			as amount FROM transfers where user = ? ");
+		$stm->bind_param("s", $user);
+		
+		if ($stm->execute() == false){
+			closeDBandFile($stm->error); // In case of error print the error 
+				//and close the connection with files and mysql 
+		}
+		
+		$result = $stm->get_result(); // Retrieve the information from the database
+		$row = $result->fetch_array();
+		$amount = $row['amount'];  
+		
+		// If the result set is empty than set the amount to 0
+		if(!$amount){
+			$amount = 0;
+		}
+	
+		return $amount;
+	}
+	\end{Verbatim}
+	About the deposit, since the database is able to sum the integer and if needed automatically performs the cast to a bigger type in case the result is to big for the used type, there is no need to check if the user amount is bigger than the integer type of the database, the only limit is regarding the transactions amount that need to be within the mysql integer type limits. 
+	
+	\item \textbf{Slow operations}: It was immediately clear that some operations with the database were very slow and could be used against the web application. In the specific two slow operations are executed when the balance operation is specified from the user and are the balance calculation and the transfers history visualization. To solve this problem two things has been added:
+	\begin{itemize}
+		\item The balance has been calculated using a sql query, this is faster than getting all the results from the database and calculate the balance by summing all the rows in case the transfers are a lot, also the database should mantain good performances also if in the table are present a lot of rows. In the specific every time the balance of the user is needed the \textbf{getUserBalance} function is used.
+		
+		\item The second problem has been fixed by limiting the data that a single page can visualize by implementing a simple pagination of the results, in the specific the user is limited to view 25 results per page and can easily navigate through the transactions using a navigation bar. In this way even if the user has thousands of transactions the performance should remain good, and the server should answer in short amount of time also during high workloads.
+	\end{itemize}
+	
+	\item \textbf{Database problems}: Finally the database has been fixed the problems found were related to how the database tables were created and from the user used from the php script. In the specific the first problem was that the relation between the two tables wasn't enforced, so it was possible to insert transfers of users not registered, also by inserting the foreign key constraint the engine used (MyISAM) wasn't checking the foreign key, the second problem related to the user is that the php script using the root user can access to all the tables present in the system and perform everything since all the operations are allowed to that user this is a very big problem if for some reason an attacker is able to exploit a vulnerability and use the db user at his will.
+	The problem has been solved by:
+	\begin{itemize}
+		\item The table engine has been modified to InnoDB that is able to enforce foreign key constraint and finally a foreign key constraint has been added to ensure the transaction belong to an existing user.
+		
+		\item The principle of least privileges has been enforced to evaluate the operations needed from the php script and an user has been created accordingly. In the specific the user can only access to the ctf2 database and only SELECT and INSERT operations are allowed.
+	\end{itemize}
+	\begin{Verbatim}
+	CREATE USER 'php_user'@'localhost' IDENTIFIED BY '|AttackersWontFindOut@';
+	GRANT SELECT ON ctf2.users TO 'php_user'@'localhost';
+	GRANT SELECT ON ctf2.transfers TO 'php_user'@'localhost';
+	GRANT INSERT ON ctf2.users TO 'php_user'@'localhost';
+	GRANT INSERT ON ctf2.transfers TO 'php_user'@'localhost';
+	ALTER TABLE ctf2.users MODIFY COLUMN pass char(64) NOT NULL;
+	ALTER TABLE ctf2.users ENGINE = InnoDB;
+	ALTER TABLE ctf2.transfers ENGINE = InnoDB;
+	ALTER TABLE ctf2.transfers ADD CONSTRAINT users_transfers_fk FOREIGN KEY (user)
+		REFERENCES ctf2.users(user);
+	\end{Verbatim}
+	
+	\item \textbf{File and database connection}: Thanks to Piva intuition the application after the fix automatically closes the stream with the file and the connection with the database, this is really important since during the normal usage of the php script the page will be executed concurrently from many users and since the resource are limited is a good practice to release them in a correct way to allow other process to use them.
+	
+	\item \textbf{Other fix}: Finally the application has been completed by arranging eventual error message and a very minimal style for the page.
+\end{itemize}
+
+To continue the defense evaluation, even if some services won't be available because of the iptables rules that will be configured in the machines, a research on the vulnerability of the used software has been performed. These are the results:
+\begin{itemize}
+	\item \textbf{Apache 2.4.29}: The top 5 known vulnerabilities has a CVSSv4 score smaller than 7.3 and basically seems to be related to some modules that are configured and used from the attacker in order to try to stop the server, but since apache is being used with a very simple configuration it seems that no known vulnerability can be used to affect server. \href{https://www.cvedetails.com/vulnerability-list.php?vendor_id=45&product_id=66&version_id=241078&page=1&hasexp=0&opdos=0&opec=0&opov=0&opcsrf=0&opgpriv=0&opsqli=0&opxss=0&opdirt=0&opmemc=0&ophttprs=0&opbyp=0&opfileinc=0&opginf=0&cvssscoremin=0&cvssscoremax=0&year=0&month=0&cweid=0&order=3&trc=18&sha=e3f39e55231940b8282f47396e556881d5954cd3}{List of known vulnerabilies}.
+	
+	\item \textbf{Php 7.2.24}: Generally there are a lot of known vulnerabilities (34) for the version 7.x of php, but seems that all the vulnerability are patched before the version used from LAMPP. \href{https://www.cvedetails.com/vulnerability-list.php?vendor_id=74&product_id=128&version_id=235668&page=1&hasexp=0&opdos=0&opec=0&opov=0&opcsrf=0&opgpriv=0&opsqli=0&opxss=0&opdirt=0&opmemc=0&ophttprs=0&opbyp=0&opfileinc=0&opginf=0&cvssscoremin=0&cvssscoremax=0&year=0&month=0&cweid=0&order=3&trc=34&sha=2f75abb453af67c2cfdd59ab77666b9572304c78}{List of known vulnerabilies}.
+	
+	\item \textbf{Mysql 5.7.31}: The result are practically the same obtained while analyzing php known vulnerabilities. Also, we should be safe, by considering that the mysql server isn't directly accessible from outside the server, so for an eventual attacker should be very difficult to gain access to this component of the system to exploit vulerabilities. \href{https://www.cvedetails.com/vulnerability-list.php?vendor_id=93&product_id=21801&version_id=242149&page=1&hasexp=0&opdos=0&opec=0&opov=0&opcsrf=0&opgpriv=0&opsqli=0&opxss=0&opdirt=0&opmemc=0&ophttprs=0&opbyp=0&opfileinc=0&opginf=0&cvssscoremin=0&cvssscoremax=0&year=0&month=0&cweid=0&order=3&trc=100&sha=620313f8a90c589726af95aa0b4d06477f2a7496
+	}{List of known vulnerabilies}.
+\end{itemize}
+
+The work continue by generating the startup script for both red and blue team, to be fair the script are more or less the same used for the resilient ctf, there are only slight modification related to the fact that this time the used packages are different.
+Startup scripts:
+\begin{itemize}
+	\item Blue startup.sh: Is automatically configuring the iptables of gateway and server machine to accept traffic directed to server port 80, eventual ping traffic limited to 1 operation per second from all the network of the laboratory and it's blocking all the other traffic. To conclude the script has been modified to install LAMPP, apply the patch agains slow loris attacks, fix the database problem by running an .sql file and finally by loading all the script in /home/cctf folder.
+	
+	\item Red startup.sh: This script is installing all the needed packages and uploading all the attack script on /home/cctf folder.
+\end{itemize} 
+
+Finally to complete the analysis some test with a network fuzzer has been performed. In the specific \href{https://github.com/xmendez/wfuzz}{wfuzz} has been used and by using apache.txt and sql\_inj.txt wordlist some test has been performed to ensure the implemented security measures were strong enough. 
+\begin{verbatim}
+wfuzz -c -w /home/giovanni/Scaricati/wfuzz/wordlist/vulns/apache.txt 
+	"http://localhost:8080/process.php?user=FUZZ&pass=FUZZ&amount=FUZZ&drop=FUZZ"
+
+wfuzz -c -w /home/giovanni/Scaricati/wfuzz/wordlist/vulns/apache.txt 
+	"http://localhost:8080/process.php?user=test1&pass=test1test1test1&amount=FUZZ&drop=deposit"
+
+wfuzz -c -w /home/giovanni/Scaricati/wfuzz/wordlist/vulns/apache.txt 
+	"http://localhost:8080/process.php?user=test1&pass=test1test1test1&amount=FUZZ&drop=withdraw"
+\end{verbatim}
+These are some of the command that has been executed to test the security of the php script, all the test performed gave negative results and the application seemed to answer well.
+
+To conclude the work for the defense phase a script to check the consistency of the database has been created, 
+
+\subsubsection{Attack phase}
+
+\subsection{Micheli}
+
+\subsection{Piva}
 
 \end{document}
