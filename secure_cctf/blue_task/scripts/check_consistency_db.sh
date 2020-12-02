@@ -24,6 +24,11 @@ do
         echo "No consistency problem detected! ($COUNT)"
     fi
 
+    echo "Users: "
+    echo "SELECT count(*) FROM ctf2.users;" | mysql -u"root" -p"@ThisIsASecurePassword|"  2> /dev/null
+    echo "Transfers: "
+    echo "SELECT count(*) FROM ctf2.transfers;" | mysql -u"root" -p"@ThisIsASecurePassword|"  2> /dev/null
+
     sleep 5;
     rm -rf $FILENAME1
     rm -rf $FILENAME2

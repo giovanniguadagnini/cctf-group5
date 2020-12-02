@@ -22,7 +22,7 @@
         $myLog = "/tmp/request_only.log";
 
         // Open the files for the log operations
-        $fh_myLog = fopen($myFile, 'a') or exit("Problem during the opening operations for the /tmp/request.log file.</body></html>");
+        $fh_myLog = fopen($myLog, 'a') or exit("Problem during the opening operations for the /tmp/request.log file.</body></html>");
         $fh = fopen($myFile, 'a') or exit("Problem during the opening operations for the /tmp/request_only.log file.</body></html>");
 
         // Log for scoring section
