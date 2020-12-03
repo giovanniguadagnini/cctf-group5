@@ -83,7 +83,7 @@ In all the scripts the interface has been inserted as a parameter thanks to a so
 $(ip a | grep 10.1.5.3 | tail -c 5)
 \end{Verbatim}
 
-\subsubsection{Strategies}
+\subsubsection{Strategy}
 Has also been developed the defense and attack strategy, that which over time have been modified according to the results obtained during the internal tests.
 
 \paragraph{Defense strategy}
@@ -234,14 +234,39 @@ During this ctf, the point were earned as red team when sending malicious reques
 \subsection{Dupre}
 
 \subsection{Guadagnini}
+For this ctf the work started by developing fixing the process.php script code, of which all the decisions regarding fixes are illustrated in the next paragraph, continued with the development of the stratup.sh scritps, that to be fair the script are more or less the same used for the resilient ctf, there are only slight modifications related to the fact that this time the used packages are different:
+\begin{itemize}
+	\item Blue startup.sh: Is automatically configuring the iptables of gateway and server machine to accept traffic directed to server port 80, eventual ping traffic limited to 1 operation per second from all the network of the laboratory and it's blocking all the other traffic. To conclude the script has been modified to install LAMPP, apply the patch agains slow loris attacks, fix the database problem by running an .sql file and finally by loading all the script in /home/cctf folder.
+	
+	\item Red startup.sh: This script is installing all the needed packages and uploading all the attack script on /home/cctf folder.
+\end{itemize} 
+
+Finally the work ended by developing the missing milestones:
+\begin{itemize}
+	\item check\_consistency\_db.sh: This script is really useful to check if the attackers are creating problems to the database integrity, in the specific two queries are executed in order to spot if some users has a negative balance and also if some transactions exists for users non registered in the system, all these two contidions should be ensured from the patches applied to the php script but also from the foreign key constraint that has been added to the database. In any case it's a good pratice to check that these conditions are always in place since the adversary may have some new attacks that could not be fixed from the used implementation. During the ctf this script has been modified to monitor the number of users and transactions generated.
+	
+	\item connect\_to\_client.sh: This script by exploiting port forwarding capabilities of deterlab and a proxy tunnel between the client and a browser allowed the user to connect to the adversary server using one of the clients connected tho the deterlab experiment, really useful to test some attacks.
+	
+	\item genuine\_request.sh: This script is really simple and after performing the registration of the user in the system it keeps sending deposit and withdraw operations 
+	interspersed with one second waits, to generate genuine traffic to the adversary server.
+	
+	\item basic\_attack.sh: This script tries to exploit the fact the adversary process.php is not pathced against slow operations. The idea is really simple and it's subdivided in two parts:
+	\begin{enumerate}
+		\item The script using the same account used for the genuine\_request.sh keep running deposit and withdraw operations.
+		\item When some time passed and the user has a lot of transactions, the script was launched to keep requesting for balance while the genuine\_request.sh keep doing it's work. In this way the server should slow down and some consistency problem may be generated from the high workload.
+	\end{enumerate} 
+	It very simple to see if the php script wasn't patched and was only needed to request for a balance page after the genuine\_request.sh script was running for a while, if the page was really big than the attack may be possible.
+	
+	\item attack.py: This is also a very simple attack script that using a predefined list of payloads that may generate problems to the adversary implmentation. Specifically, the script tries to create malicious requests by inserting payloads in the various combinations of valid and non-valid requests that are generated and sent to the server, after sending the request, before proceeding with the next try, the script shows the result code and the returned page in order for the user to evaluate if the attack was successful or not.
+\end{itemize}
 
 \subsubsection{Strategy}
-As happened for the resilient ctf a strategy has been created as result of the analysis of the used...
+As happened for the resilient ctf a strategy has been created and optimized as result of all the work done and also from the analysis of the services involved in the laboratory. In the specific, for the defense phase all the vulnerabilities identified in the php has been mitigated and also some iptables rule has been employed in both server and gateway to regulate the traffic that was able to reach the server; instead for the attack phase some really general attacks that tries to exploit the fixed vulnerabilities has been created.
 
-\subsubsection{Defense phase}
-This time the work started by applying the patch needed to secure the php script:
+\paragraph{Defense phase}
+For the defense, the work started by applying the patch needed to secure the php script:
 \begin{itemize}
-	\item \textbf{SQL injection}: The first problem fixed was relative to sql injection, in the specific the application wasn't performing any type of checks on the data before executing the query, this is really unsecure since an attacker could exploit this security problem to run whatever command he wants to run in our database and this can bring problem like data leaks and incosistencies. So in order to fix this problem prepared statement has been implemented in all the query that used parameter, as for the next small example script:
+	\item \textbf{SQL injections}: The first problem fixed was relative to sql injection, in the specific the application wasn't performing any type of checks on the data before executing the query, this is really unsecure since an attacker could exploit this security problem to run whatever command he wants to run in our database and this can bring problem like data leaks and incosistencies. So in order to fix this problem prepared statement has been implemented in all the query that used parameter, as for the next small example script:
 	\begin{Verbatim}[tabsize=4]
 	$stm = $mysqli->prepare("INSERT INTO transfers (user,amount) values (?, ?)");
 	$stm->bind_param("si", $user, $amount);
@@ -373,6 +398,8 @@ This time the work started by applying the patch needed to secure the php script
 	
 	\item \textbf{File and database connection}: Thanks to Piva intuition the application after the fix automatically closes the stream with the file and the connection with the database, this is really important since during the normal usage of the php script the page will be executed concurrently from many users and since the resource are limited is a good practice to release them in a correct way to allow other process to use them.
 	
+	\item \textbf{Log}: Since the log original implementation was logging all the evantual parameters the user insert in the request, has been added into the php script a small section of the log part that in order to evaluate the attacks was logging only the parameter used from the php script in the specific name, surname, drop and amount.
+	
 	\item \textbf{Other fix}: Finally the application has been completed by arranging eventual error message and a very minimal style for the page.
 \end{itemize}
 
@@ -386,14 +413,6 @@ To continue the defense evaluation, even if some services won't be available bec
 	}{List of known vulnerabilies}.
 \end{itemize}
 
-The work continue by generating the startup script for both red and blue team, to be fair the script are more or less the same used for the resilient ctf, there are only slight modification related to the fact that this time the used packages are different.
-Startup scripts:
-\begin{itemize}
-	\item Blue startup.sh: Is automatically configuring the iptables of gateway and server machine to accept traffic directed to server port 80, eventual ping traffic limited to 1 operation per second from all the network of the laboratory and it's blocking all the other traffic. To conclude the script has been modified to install LAMPP, apply the patch agains slow loris attacks, fix the database problem by running an .sql file and finally by loading all the script in /home/cctf folder.
-	
-	\item Red startup.sh: This script is installing all the needed packages and uploading all the attack script on /home/cctf folder.
-\end{itemize} 
-
 Finally to complete the analysis some test with a network fuzzer has been performed. In the specific \href{https://github.com/xmendez/wfuzz}{wfuzz} has been used and by using apache.txt and sql\_inj.txt wordlist some test has been performed to ensure the implemented security measures were strong enough. 
 \begin{verbatim}
 wfuzz -c -w /home/giovanni/Scaricati/wfuzz/wordlist/vulns/apache.txt 
@@ -406,10 +425,40 @@ wfuzz -c -w /home/giovanni/Scaricati/wfuzz/wordlist/vulns/apache.txt
 	"http://localhost:8080/process.php?user=test1&pass=test1test1test1&amount=FUZZ&drop=withdraw"
 \end{verbatim}
 These are some of the command that has been executed to test the security of the php script, all the test performed gave negative results and the application seemed to answer well.
+\\
+\\
+A possible use of Snort was evaluated but finally discarded since the protection provided by the iptables rules and its match-string module allowed to effectively protect the webapp
 
-To conclude the work for the defense phase a script to check the consistency of the database has been created, 
+\paragraph{Attack phase}
+As happened for the resilient ctf the attacks has been created trying to exploit vulnerabilities found in the original implementation, for this reason attack script as basic\_attack.sh and attack.py has been created. To be fair it was difficult to create original attacks that deviate from exploiting slow operations or sql injections and it was also very difficult to exploit volumetric attacks increasing the number of requests since basically we were allowed to send 1 request per second from each client. It was also difficult to create other exploit because the used software seemed to be secure against known vulnerabilities and if the traffic was well managed from the adversary firewall was really difficult to reach the machines and eventual vulnerable services.
 
-\subsubsection{Attack phase}
+\subsubsection{Results Evaluation}
+As for the first ctf I personally enjoyed the experience, overall during the ctf the implemented defense held up really good to the received attacks in fact from the monitoring software I dind't noticed consistency problem and the server seemed to be up and fast for all the duration ctf. I noticed the adversary tried to run a really basic version of slow loris that I blocked with an iptables rules since the keep-alive messages contained a recongnizable string. I also noticed they tried to exploit remote code execution with a remote shellcode that didn't worked and also they tried with sqlinjection. Most of the time they tried to create users in the system in fact they managed to create more than 60000 users. 
+
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.35\linewidth}
+		\includegraphics[width=\linewidth]{server_response_time}
+		\caption{Server response time from monitoring software.}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.3\linewidth}
+		\includegraphics[width=\linewidth]{db_status}
+		\caption{Database status from monitoring software.}
+	\end{subfigure}
+	\caption{These two images represent the system status at the end of the ctf.}
+\end{figure}
+
+To be fair after 1 hour and half our disk was full because the log file reached 11GB of dimension, this seemed to be my fault since in the process.php script I was using the same file for the normal logs and also the original version of the log but also seems to ba a consequence of the adversary red team script tha was generating to much traffic, the monitoring software detected 1955 packet in 5 seconds and I think the very high number of request ended up in creating a very big log file.
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=6cm,height=3cm]{dos_ctf_secure}
+	\caption{Traffic data collected in 5 seconds.}
+\end{figure}
+
+In retrospect I think that in addition to the applied changes I would have implemented, as suggested during the debriefing, a sort of filter to limit the creation of malicious users by checking for the presence of special characters or something similar also I would have liked to have snort with some rules to detect some attacks. 
+\\
+\\
+As far as the attack phase is concerned, our attacks have not had a great effect, and what has created problems for the opposing blue team seems to have been an incorrect configuration.
 
 \subsection{Micheli}
 
