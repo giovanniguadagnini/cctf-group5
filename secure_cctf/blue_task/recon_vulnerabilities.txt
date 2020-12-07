@@ -1,5 +1,6 @@
+-------------------------------------------------APACHE---------------------------------------------
 https://www.cvedetails.com/vulnerability-list.php?vendor_id=45&product_id=66&version_id=241078&page=1&hasexp=0&opdos=0&opec=0&opov=0&opcsrf=0&opgpriv=0&opsqli=0&opxss=0&opdirt=0&opmemc=0&ophttprs=0&opbyp=0&opfileinc=0&opginf=0&cvssscoremin=0&cvssscoremax=0&year=0&month=0&cweid=0&order=3&trc=18&sha=e3f39e55231940b8282f47396e556881d5954cd3
-Apache: 2.4.29
+Version: 2.4.29
 
 18 known vulnerabilities that could affect the server the top 5 vulnerability oreder by score are:
 CVE-2019-0211 (7.2) : Not exploitable since MPM module is not enabled.
@@ -8,29 +9,26 @@ CVE-2018-1312 (6.8) : Not exploitable since works by using replay attacks in a c
 CVE-2019-10082 (6.4) : Not exploitable since the application isn't using sessions.
 CVE-2019-10098 (5.8) : Not exploitable since mod_rewrite isn't used.
 
+Also analyzed from other sources:
+CVE-2020-11984 (9.8): Require mod_proxy_uwsgi.
+CVE-2020-9490 (7.5): Require http2 that is available under https, no problem.
+
 Basically seems that all the vulnerabilities are related to some modules that are configured and used from the attacker to 
 try to stop the server but since we are using apache with a very simple configuration it seems that no know vulnerability 
 can be used to affect our apache server.
 
------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------PHP---------------------------------------------
 https://www.cvedetails.com/vulnerability-list.php?vendor_id=74&product_id=128&version_id=235668&page=1&hasexp=0&opdos=0&opec=0&opov=0&opcsrf=0&opgpriv=0&opsqli=0&opxss=0&opdirt=0&opmemc=0&ophttprs=0&opbyp=0&opfileinc=0&opginf=0&cvssscoremin=0&cvssscoremax=0&year=0&month=0&cweid=0&order=3&trc=34&sha=2f75abb453af67c2cfdd59ab77666b9572304c78
 Version: 7.2.24
 
 Generally there are a lot of vulnerability (34) for php version 7, but seems that all the vulnerability are patched before this version.
 
---------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------MYSQL---------------------------------------------
 https://www.cvedetails.com/vulnerability-list.php?vendor_id=93&product_id=21801&version_id=242149&page=1&hasexp=0&opdos=0&opec=0&opov=0&opcsrf=0&opgpriv=0&opsqli=0&opxss=0&opdirt=0&opmemc=0&ophttprs=0&opbyp=0&opfileinc=0&opginf=0&cvssscoremin=0&cvssscoremax=0&year=0&month=0&cweid=0&order=3&trc=100&sha=620313f8a90c589726af95aa0b4d06477f2a7496
-
 Version: 5.7.31
 
-Same for php, considering the case it's much difficult to exploit since for the attacker should be very difficult to gain access to this component of the system since it's only open the 80 port.
+CVE-2020-14539 (6.5): Already patched in the used version.
+CVE-2020-14812 (4.9): Already patched in the used version.
 
-https://nvd.nist.gov/vuln/detail/CVE-2020-11984
-
-https://nvd.nist.gov/vuln/detail/CVE-2020-9490
-
-https://nvd.nist.gov/vuln/detail/CVE-2020-14812
-
-CVE-2020-14539
-
----------------------------------------------------------------------------------------------------------------------------------------------------------------
+Same for php, considering the case it's much difficult to exploit since for the attacker should be very difficult to gain access to this 
+component of the system since it's only open the 80 port.

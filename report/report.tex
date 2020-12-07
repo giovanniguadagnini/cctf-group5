@@ -279,7 +279,7 @@ For the defense, the work started by applying the patch needed to secure the php
 	
 	\item \textbf{Possible XSS}: Also it was almost immediately noticed the possibility to create problems to the user exploiting the fact that on 'user' and 'pass' field of the request no checks were performed, so it was really simple to use them to execute XSS injections. This problem was fixed using \textbf{htmlentites} function of php that in escape all the characters and make impossible for an attacker to exploit this issue.
 	
-	\item \textbf{Credential checks and security}: The original implementation of the process.php script wasn't checking the user credentials before executing the operations, so it was possible for an attacker to perform operations also for users that weren't present in the system. To fix this problem an authentication function has been added and used to protect the execution of maliciou requests.
+	\item \textbf{Credential checks and security}: The original implementation of the process.php script wasn't checking the user credentials before executing the operations, so it was possible for an attacker to perform operations also for users that weren't present in the system. To fix this problem an authentication function has been added and used to protect the execution of malicious requests.
 	\begin{Verbatim}
 	if ($choice == 'register') {
 		...
@@ -291,7 +291,7 @@ For the defense, the work started by applying the patch needed to secure the php
 		... 
 	} 
 	\end{Verbatim}
-	So after the fix was possible to perform balance, deposit and withdraw, that implicitly consider that the user is present in the system, only if the user credentials provided has been verified.
+	So after the fix was possible to perform balance, deposit and withdraw, that implicitly consider that the user is present in the system, only if the user credentials provided has been verified, obviously in order to avoid useless work to the database the function that verify the user credentials is called only if the user setted all the parameter in a correct and managed to get to the operation without problems.
 	\\
 	The second problem with the password was that in the database the password were stored in clear so possible data leak could be very dangerous for the registered users also no checks on the minumum password lenght were enforced. To fix this problem the code has beed updated to user \textbf{password\_hash} and \textbf{password\_verify} php functions and a simple check on the paramter has been added to check that the password was at least 10 characters long, in this way the user need to insert a password that is at least 10 characters long and the password are stored in the database hashed to reduce the risks. A function that checks if the password is secure could also been interesting to add to the script to enhance the security level of the password. 
 	\begin{Verbatim}[tabsize=4]
@@ -425,6 +425,7 @@ wfuzz -c -w /home/giovanni/Scaricati/wfuzz/wordlist/vulns/apache.txt
 	"http://localhost:8080/process.php?user=test1&pass=test1test1test1&amount=FUZZ&drop=withdraw"
 \end{verbatim}
 These are some of the command that has been executed to test the security of the php script, all the test performed gave negative results and the application seemed to answer well.
+It's possible to find more information on the recon phase in the files contained in the repo.
 \\
 \\
 A possible use of Snort was evaluated but finally discarded since the protection provided by the iptables rules and its match-string module allowed to effectively protect the webapp
