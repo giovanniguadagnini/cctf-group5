@@ -1,3 +1,7 @@
+###############################
+# Author: Guadagnini Giovanni #
+###############################
+
 #!/bin/bash
 
 ### Machines names

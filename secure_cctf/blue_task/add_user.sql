@@ -1,3 +1,7 @@
+--###############################
+--# Author: Guadagnini Giovanni #
+--###############################
+
 DROP USER 'root'@'localhost';
 CREATE USER 'root'@'localhost' IDENTIFIED BY '@ThisIsASecurePassword|';
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION;

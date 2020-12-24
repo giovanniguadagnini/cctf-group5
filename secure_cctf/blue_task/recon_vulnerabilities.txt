@@ -1,3 +1,7 @@
+###############################
+# Author: Guadagnini Giovanni #
+###############################
+
 -------------------------------------------------APACHE---------------------------------------------
 https://www.cvedetails.com/vulnerability-list.php?vendor_id=45&product_id=66&version_id=241078&page=1&hasexp=0&opdos=0&opec=0&opov=0&opcsrf=0&opgpriv=0&opsqli=0&opxss=0&opdirt=0&opmemc=0&ophttprs=0&opbyp=0&opfileinc=0&opginf=0&cvssscoremin=0&cvssscoremax=0&year=0&month=0&cweid=0&order=3&trc=18&sha=e3f39e55231940b8282f47396e556881d5954cd3
 Version: 2.4.29

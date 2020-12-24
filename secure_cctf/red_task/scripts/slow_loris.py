@@ -1,3 +1,7 @@
+###############################
+# Author: Guadagnini Giovanni #
+###############################
+
 #usr/bin/env python
 
 import sys

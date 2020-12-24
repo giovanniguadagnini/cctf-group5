@@ -1,3 +1,7 @@
+###############################
+# Author: Guadagnini Giovanni #
+###############################
+
 To complete the evaluation I run some tests with wfuzz:
     1) ssh -L 8080:pc098:80 otech2ba@users.deterlab.net -N -f (Connect to the server)
 
