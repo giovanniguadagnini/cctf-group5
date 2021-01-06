@@ -19,7 +19,8 @@ start=$SECONDS
 count=0
 while true
 do
-    curl -sS "10.1.5.2/process.php?user=$USER&pass=$PASS&drop=deposit&amount=$((5 + $RANDOM % 90))" >/dev/null &
+    curl -sS "10.1.5.2/process.php?user=$USER&pass=$PASS&drop=deposit&amount=$((5 + $RANDOM % 90))" >/dev/null
+    sleep 1
     count=$(( count + 1 ))
     duration=$(( SECONDS - start ))
 

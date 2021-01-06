@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ### Machines names
-PROJECT=".securecctf-g5.OffTech"
+PROJECT=".sq-comp1.OffTech"
 CLIENT="client"
 
 #Create errors folder if it's not already present

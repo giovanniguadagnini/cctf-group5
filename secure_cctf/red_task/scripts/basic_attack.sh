@@ -24,9 +24,9 @@ curl -sS "10.1.5.2/process.php?user=$USER&pass=$PASS&drop=register"
 COUNT=1
 while true
 do
-    curl -w "time_total: %{time_total}s\n" -o /dev/null -sS "10.1.5.2/process.php?user=$USER&pass=$PASS&drop=deposit&amount=2147483647" &
+    curl -w "time_total: %{time_total}s\n" -o /dev/null -sS "10.1.5.2/process.php?user=$USER&pass=$PASS&drop=deposit&amount=2147483646" &
     sleep 1
-    curl -w "time_total: %{time_total}s\n" -o /dev/null -sS "10.1.5.2/process.php?user=$USER&pass=$PASS&drop=withdraw&amount=2147483647" &
+    curl -w "time_total: %{time_total}s\n" -o /dev/null -sS "10.1.5.2/process.php?user=$USER&pass=$PASS&drop=withdraw&amount=2147483646" &
     sleep 1
     COUNT=$((COUNT+2))
     echo "$COUNT operation requested"
