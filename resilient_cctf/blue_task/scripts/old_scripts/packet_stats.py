@@ -1,3 +1,7 @@
+###############################
+# Author: Guadagnini Giovanni #
+###############################
+
 # Extend your monitoring software so you can automatically get statistics on 
 # number of packets and bytes sent to the server in TCP data, TCP SYN, UDP 
 # and ICMP and Total categories so you can diagnose various DDoS attacks. 

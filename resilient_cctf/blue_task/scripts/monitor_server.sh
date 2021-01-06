@@ -1,3 +1,7 @@
+###############################
+# Author: Guadagnini Giovanni #
+###############################
+
 #!/bin/bash
 
 # Develop monitoring software on the gateway machine that will 

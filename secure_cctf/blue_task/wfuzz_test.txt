@@ -1,24 +1,33 @@
+###############################
+# Author: Guadagnini Giovanni #
+###############################
+
 To complete the evaluation I run some tests with wfuzz:
     1) ssh -L 8080:pc098:80 otech2ba@users.deterlab.net -N -f (Connect to the server)
 
     2) sudo apt install wfuzz (+installation dependencies)
 
-    2.1) wfuzz -c -w /home/giovanni/Scaricati/wfuzz/wordlist/vulns/apache.txt "http://localhost:8080/process.php?user=FUZZ&pass=FUZZ&amount=FUZZ&drop=FUZZ"
+    2.1) wfuzz -c -w apache.txt "http://localhost:8080/process.php?user=FUZZ&pass=FUZZ&amount=FUZZ&drop=FUZZ"
 
     2.2) Registered user test1:test1test1test1
-    wfuzz -c -w /home/giovanni/Scaricati/wfuzz/wordlist/vulns/apache.txt "http://localhost:8080/process.php?user=test1&pass=test1test1test1&amount=FUZZ&drop=deposit"
-    wfuzz -c -w /home/giovanni/Scaricati/wfuzz/wordlist/vulns/apache.txt "http://localhost:8080/process.php?user=test1&pass=test1test1test1&amount=FUZZ&drop=withdraw"
+    wfuzz -c -w apache.txt "http://localhost:8080/process.php?user=test1&pass=test1test1test1&amount=FUZZ&drop=deposit"
+    wfuzz -c -w apache.txt "http://localhost:8080/process.php?user=test1&pass=test1test1test1&amount=FUZZ&drop=withdraw"
 
     2.3) Test with sql_inj.txt on amount
-    wfuzz -c -w /home/giovanni/Scaricati/wfuzz/wordlist/vulns/sql_inj.txt "http://localhost:8080/process.php?user=test1&pass=test1test1test1&amount=FUZZ&drop=deposit"
-    wfuzz -c -w /home/giovanni/Scaricati/wfuzz/wordlist/vulns/sql_inj.txt "http://localhost:8080/process.php?user=test1&pass=test1test1test1&amount=FUZZ&drop=withdraw"
+    wfuzz -c -w sql_inj.txt "http://localhost:8080/process.php?user=test1&pass=test1test1test1&amount=FUZZ&drop=deposit"
+    wfuzz -c -w sql_inj.txt "http://localhost:8080/process.php?user=test1&pass=test1test1test1&amount=FUZZ&drop=withdraw"
 
     2.3) Test with sql_inj.txt on user and password
-    wfuzz -c -w /home/giovanni/Scaricati/wfuzz/wordlist/vulns/sql_inj.txt "http://localhost:8080/process.php?user=FUZZ&pass=FUZZ&drop=register"
+    wfuzz -c -w sql_inj.txt "http://localhost:8080/process.php?user=FUZZ&pass=FUZZ&drop=register"
 
-    wfuzz -c -w /home/giovanni/Scaricati/wfuzz/wordlist/vulns/sql_inj.txt "http://localhost:8080/process.php?user=FUZZ&pass=ciaociaociao&drop=register"
+    wfuzz -c -w sql_inj.txt "http://localhost:8080/process.php?user=FUZZ&pass=ciaociaociao&drop=register"
 
     2.4) Test with different encoding
-    wfuzz -z file,<wordlist>,<encoder> ...
+    wfuzz -z file,sql_inj.txt,base64 "http://localhost:8080/process.php?user=FUZZ&pass=FUZZ&amount=FUZZ&drop=FUZZ"
+    wfuzz -z file,sql_inj.txt,mysql_char "http://localhost:8080/process.php?user=FUZZ&pass=FUZZ&amount=FUZZ&drop=FUZZ"
+
+    2.5) Test with multiple params
+    wfuzz -c -w apache.txt -w apache.txt -w apache.txt -w apache.txt "http://localhost:8080/process.php?user=FUZZ&pass=FUZ2Z&amount=FUZ3Z&drop=FUZ4Z"
+    wfuzz -c -w sql_inj.txt -w sql_inj.txt "http://localhost:8080/process.php?user=FUZZ&pass=FUZ2Z&drop=register"
 
 No problem detected

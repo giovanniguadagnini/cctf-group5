@@ -57,13 +57,25 @@ This image describe the topology of the laboratory, that can be subdiveded in 3 
 During the ctf attackers earn a points when a genuine request from the client take more than 0.5 seconds to be received, and on the contrary the point is given to the defenders group if the request is received from the client before half a second is passed. 
 
 \subsection{Dupre}
+After our initial meet-up I, along with Giovanni Guadagnini, started working on milestones for the "blue task" I.E for the defense of our infrastructure and server. I mainly worked on two scripts:
+\begin{itemize}
+	\item milestone1.sh: This script  fulfill the requirements expressed in the first milestone of our blue task, which is "Develop monitoring at the server that will let 	you automatically check the content of HTTP requests you are getting and who is sending them". It is quite straightforward; it starts by asserting which is the right ETH  to monitor on our server, by using the ip command in combination with a grep of the right ip address and a cut to isolate the ETH. We then launch tcpflow with this newly found ETH and port 80. The output is then send to a AWK command keeping only the source and destination address, as well as wich file was requested and its content. The output is then stored into milestone1.txt. This script was later reworked and  replaced by packet\_inspection.sh.	
+	
+	
+	\item alternative\_packets\_stats.py: This file is an alternative way of collecting data on incoming packets. This process is entirely done with the help of the scapy python library. Once a packet is received, we pick out the information that are interesting to us, mainly from which address this packets is coming from as well as what type of packet this is and its length. To do so, we check with flag is raised in our packet, for example SYN or ACK. We keep a count of each type of packet as well as how many come from which address. Every five seconds, a report is displayed showcasing all these information, all counts as well as our tally of IP addresses are then reset to 0. This program, despite being reactive and usefull, may suffer from slowdown when under extremely high load, this did not impact us negatively during the ctf itself.
+\end{itemize}
+
+In addition to this, several sessions were done to showcase between ourselves the advancement of our work as well as find ideas. Finally, I did some research on preventing spoofing in case of dos, leading me to the 2009 scientific paper Detecting and Preventing IP-spoofed Distributed DoS Attack by Abdulmotaleb El Saddik, which showed that considering our current configuration, this would be hard if not impossible to implement.
+
+\subsubsection{Results Evaluation}
+During the actual resilient CTF. My role was to mainly analyze packets coming from the attackers, as well as check their content and try to formulate countermeasure. The main defense I came up with was a way to block message with a length superior to what we deemed acceptable. This was quickly implemented and then removed since it had little effect on the attacks.
 
 \subsection{Guadagnini}
 The work started working by developing some milestones: 
 \begin{itemize}
 	\item monitor\_server.sh: This script perform a really fast check of the server status. By sending ping and curl requests the user can easily understand if the server it's slowed down by some attacks.
 	
-	\item analyze\_traffic.sh: This script launches two python programs that by using tcpdump, thanks to system function of os python module, and finally by analyzing the collected traffic, will enable the user to know with precision how many packets have passed through the gateway and also which client are sending data. This script in the end wasn't used since another version af the same script that uses only python seemed to be a bit faster.
+	\item analyze\_traffic.sh: This script launches two python programs that by using tcpdump, thanks to system function of os python module, and finally by analyzing the collected traffic, will enable the user to know with precision how many packets have passed through the gateway and also which client are sending data. This script in the end wasn't used since another version of the same script that uses only python seemed to be a bit faster.
 	
 	\item flood.sh: This is a simple script that act as a wrapper for the flooder program that will enable the user to flood an ip by specifying less parameter than usual.
 	
@@ -80,7 +92,7 @@ The initial part has been concluded by writing the startup.sh script for all the
 In all the scripts the interface has been inserted as a parameter thanks to a sort of subscript that using the ip address of the interface was able to return the name of the interface as a result.
 \begin{Verbatim}
 # Retrieve the name of the internal interface of the gateway machine
-$(ip a | grep 10.1.5.3 | tail -c 5)
+$(ip a | grep 10.1.5.3 | tail -c 5) $
 \end{Verbatim}
 
 \subsubsection{Strategy}
@@ -232,6 +244,25 @@ As already stated topology and machines involved are the same as in the Resilien
 During this ctf, the point were earned as red team when sending malicious request the red team was able to create inconsistency in the defender database, on the contrary the blue team earned points if they managed to deny the creation of incosistencies in the database. 
 
 \subsection{Dupre}
+For this CTF, Giovanni Guadagnini quickly did most, if not nearly all, of the work concerning the defense. As such, I went ahead and started working on the Offense first and foremost. I realized the following scripts :
+\begin{itemize}
+	\item spamErrors.py and spamUsers.py: These two scripts craft a request repeatedly, respectively with the end goal to produce an error and to create an user, and then send it to the server. Both of these scripts take a number of millisecond in argument, which will be the pause between sending two requests. Theses scripts quite simply start by creating a random 10 length username and password, and then send the request to the server using the request python library. For spamErrors the drop is simply something the server is not supposed to recognized, for example ERROR. For  spamUsers the request is legitimate and as such the drop is register. The aim of spamUsers  was to hope that the defender server was badly configured and would slow down when too many users were to be registered. The aim of spamErrors was the same.
+	
+	\item curlFillLogFile.py: This file craft dummy request repeatedly, both length and wait time between sending two requests are to be passed by arguments. Each request will randomly add specified length to either the user name, amount or password, the base length of these three parameter is 10. The aim of this script was to file the limited storage space of the server and make it unable to function properly and log new entries, granting use more points. 
+\end{itemize}
+
+None of these scripts were used since we believed this would be considered flooding, even though we were attacked with this exact same type of spam.
+
+\begin{itemize}
+	\item payload.txt: In addition to these three files, I also focused on coming up with potential payloads to use against the other group's server. I came up with the following payloads, most of them basic and simply countered. Listing all transaction, leaking a password and an username was done through simple sql injection. I also tried to register an empty user/password combo as well as an user with an empty password. I also tried to overdraft using percent and php char function in a deposit command, the logic being that we are trying to deposit a negative amount, and we are bypassing the "-" sign using these two methods. Finally I realized that the three default users all always had the same password, which we could try to take advantage by performing illegal operation on their account. 
+\end{itemize}
+
+I also created a bash script to change the password of the three default users, which was then improved and included in the blue start-up script by Giovanni Guadagnini.
+Finally, research was done through CVEs to check if any of our applications where vulnerable to attacks that we did not find about. Most, if not all of CVEs found where taking advantage a very specific setup of our Apache server for example, since our configuration was basic, none of them applied to us.
+
+
+\subsubsection{Results Evaluation}
+I started the secure CTF by trying the different payload that I had crafted, seeing that none of them had any effects, I then started to monitor traffic and check the various payloads sent by our adversaries while trying to come up with a countermeasure for their attack which was rapidly filling up our log file. 
 
 \subsection{Guadagnini}
 For this ctf the work started by developing fixing the process.php script code, of which all the decisions regarding fixes are illustrated in the next paragraph, continued with the development of the stratup.sh scritps, that to be fair the script are more or less the same used for the resilient ctf, there are only slight modifications related to the fact that this time the used packages are different:
@@ -279,7 +310,7 @@ For the defense, the work started by applying the patch needed to secure the php
 	
 	\item \textbf{Possible XSS}: Also it was almost immediately noticed the possibility to create problems to the user exploiting the fact that on 'user' and 'pass' field of the request no checks were performed, so it was really simple to use them to execute XSS injections. This problem was fixed using \textbf{htmlentites} function of php that in escape all the characters and make impossible for an attacker to exploit this issue.
 	
-	\item \textbf{Credential checks and security}: The original implementation of the process.php script wasn't checking the user credentials before executing the operations, so it was possible for an attacker to perform operations also for users that weren't present in the system. To fix this problem an authentication function has been added and used to protect the execution of maliciou requests.
+	\item \textbf{Credential checks and security}: The original implementation of the process.php script wasn't checking the user credentials before executing the operations, so it was possible for an attacker to perform operations also for users that weren't present in the system. To fix this problem an authentication function has been added and used to protect the execution of malicious requests.
 	\begin{Verbatim}
 	if ($choice == 'register') {
 		...
@@ -291,7 +322,7 @@ For the defense, the work started by applying the patch needed to secure the php
 		... 
 	} 
 	\end{Verbatim}
-	So after the fix was possible to perform balance, deposit and withdraw, that implicitly consider that the user is present in the system, only if the user credentials provided has been verified.
+	So after the fix was possible to perform balance, deposit and withdraw, that implicitly consider that the user is present in the system, only if the user credentials provided has been verified, obviously in order to avoid useless work to the database the function that verify the user credentials is called only if the user setted all the parameter in a correct and managed to get to the operation without problems.
 	\\
 	The second problem with the password was that in the database the password were stored in clear so possible data leak could be very dangerous for the registered users also no checks on the minumum password lenght were enforced. To fix this problem the code has beed updated to user \textbf{password\_hash} and \textbf{password\_verify} php functions and a simple check on the paramter has been added to check that the password was at least 10 characters long, in this way the user need to insert a password that is at least 10 characters long and the password are stored in the database hashed to reduce the risks. A function that checks if the password is secure could also been interesting to add to the script to enhance the security level of the password. 
 	\begin{Verbatim}[tabsize=4]
@@ -425,6 +456,7 @@ wfuzz -c -w /home/giovanni/Scaricati/wfuzz/wordlist/vulns/apache.txt
 	"http://localhost:8080/process.php?user=test1&pass=test1test1test1&amount=FUZZ&drop=withdraw"
 \end{verbatim}
 These are some of the command that has been executed to test the security of the php script, all the test performed gave negative results and the application seemed to answer well.
+It's possible to find more information on the recon phase in the files contained in the repo.
 \\
 \\
 A possible use of Snort was evaluated but finally discarded since the protection provided by the iptables rules and its match-string module allowed to effectively protect the webapp

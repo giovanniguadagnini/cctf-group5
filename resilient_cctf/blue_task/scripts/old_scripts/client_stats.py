@@ -1,3 +1,7 @@
+###############################
+# Author: Guadagnini Giovanni #
+###############################
+
 # Extend your monitoring software so you can detect number of packets and
 # bytes sent to the server by each client IP. Make sure the software monitors 
 # the correct interface.

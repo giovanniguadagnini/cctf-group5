@@ -49,3 +49,5 @@ As red team: the script will be used to attack a small php web application.
 3) Evaluate if the balance page grows a lot with a lot of transfers in that case, start **basic_attack.sh** (1 option to fill the table).  
 4) Open the connection with the server through the client and visit the page using **connect_to_client.sh**.  
 5) Start **genuine_requests.sh** (Pay attention to the number of requests, may give to the adversay a lot of points). **ATTENTION** user and password of basic_attack.sh and genuine_requests.sh are the same.  
+
+**ATTENTION**: This material is intended to be used in a secure environment disconnected from the network as a test of offensive and defensive approaches.
