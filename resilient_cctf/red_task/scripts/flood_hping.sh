@@ -1,5 +1,9 @@
 #!/bin/bash
 
+###############################
+# Author: Piva Davide         #
+###############################
+
 if [[ $# -lt 2 ]]
 then
     echo "USAGE: ./flood_hping.sh <option> <srcIP>"

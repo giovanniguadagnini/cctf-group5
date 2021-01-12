@@ -1,5 +1,9 @@
 #!/bin/bash
 
+###############################
+# Author: Piva Davide         #
+###############################
+
 if [[ $# -lt 1 ]]
 then
     echo "USAGE: ./slow_loris_wrules <src_IP>"

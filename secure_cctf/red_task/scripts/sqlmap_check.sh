@@ -1,3 +1,7 @@
+###############################
+# Author: Piva Davide         #
+###############################
+
 #!/bin/bash
 
 URL="server/process.php?user=abc&pass=abc&drop=deposit&amount=10"

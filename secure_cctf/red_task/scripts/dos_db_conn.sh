@@ -1,3 +1,7 @@
+###############################
+# Author: Piva Davide         #
+###############################
+
 #!/bin/bash
 SEED=$( cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 20 | head -n 1 )
 
